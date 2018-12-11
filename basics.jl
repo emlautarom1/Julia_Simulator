@@ -284,6 +284,12 @@ end
 
 #---------------------------------------------------------------------------------
 #--          form's initial value = reshape(zeros(Int8,0),0,0,2)                --
+#--          dictionary example for PDP-11                                      --
+#--          dict=Dict{String,Tuple{String,UnitRange{Int64}}}                   --
+#--                  ("Byte"=>("10",0:0),                                       --
+#--                   "Source"=>("10",4:9),                                     --
+#--                   "OpCode"=>("11",1:3),                                     --
+#--                   "Dest"=>("10",10:15))                                     --
 #---------------------------------------------------------------------------------
 function inPattern(form::Array{Int8,3},patt::String,dict::Dict{String,Tuple{String,UnitRange{Int64}}})
     local s=size(form)
