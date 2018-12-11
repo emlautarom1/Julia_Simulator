@@ -277,13 +277,32 @@ function flbsr(size::Int64,num::Real,exp::Int64)::Tuple{OffsetVector{Int8},Int64
     exponent,coefficient=normalize(-expextr,num,-expextr)
     t=signmagnr(length(Coef),BigInt(basics.truncate(coefficient)))[1]
     rep[Exp],xmin,xmax=biasr(length(Exp),BigInt(exponent))
-    rep[Coef]=t
-    println(rep)
     rep[0]=t[0]
-    println(rep)
-#    rep[0]=t[0]
-#    rep[Coef[3]:Coef[end]]=t[2:end]
+    rep[Coef[3]:Coef[end]]=t[2:end]
     return rep,xmin,xmax
+end
+
+#---------------------------------------------------------------------------------
+#--          form's initial value = reshape(zeros(Int8,0),0,0,2)                --
+#---------------------------------------------------------------------------------
+function inPattern(form::Array{Int8,3},patt::String,dict::Dict{String,Tuple{String,UnitRange{Int64}}})
+    local s=size(form)
+    local p=replace(replace(patt,r"(0|1)( |$)" => x->"0"*rstrip(x)),r"(?<tok>[a-z][a-z0-9]+( |$))"i=> 
+                    x-> (string(dict[rstrip(x)][1]))^length(dict[rstrip(x)][2]))
+    local l=div(length(p),2)
+    if l<s[2]
+        p=rpad(p,s[2]<<1,"10")
+        l=s[2]
+    end
+    if l>s[2]
+        # wide the table form
+        local exp::Array{Int8,3}=reshape(zeros(Int8,s[1]*(l-s[2])*s[3]),(s[1],l-s[2],s[3]))
+        exp[:,:,1]=reshape(ones(Int8,s[1]*(l-s[2])),s[1],l-s[2],1)
+        form=hcat(form,exp)
+    end
+    #add pattern to form
+    local entry::Array{Int8,3}=reshape(vec(transpose(map(x-> Int8(x)-48,reshape(collect(p),2,l)))),1,l,2)
+    form=vcat(form,entry)
 end
 
 end #module
