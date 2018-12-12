@@ -2,6 +2,7 @@ module basics
 using OffsetArrays
 export +,radix,byte,radixcompi,radixcompr,digitcompi,digitcompr,magni,magnr,signmagni,signmagnr
 export biasi,biasr,hidebit,insertbit,truncate,round,trueround,normalize,flbsi,flbsr
+export inPattern
 
 import Base.+
 +(of::Int64,r::UnitRange{Int64})::UnitRange{Int64} = UnitRange(r[1]+of,r[end]+of)
@@ -291,7 +292,7 @@ end
 #--                   "OpCode"=>("11",1:3),                                     --
 #--                   "Dest"=>("10",10:15))                                     --
 #---------------------------------------------------------------------------------
-function inPattern(form::Array{Int8,3},patt::String,dict::Dict{String,Tuple{String,UnitRange{Int64}}})
+function inPattern(form::Array{Int8,3},patt::String,dict::Dict{String,Tuple{String,UnitRange{Int64}}})::Array{Int8,3}
     local s=size(form)
     local p=replace(replace(patt,r"(0|1)( |$)" => x->"0"*rstrip(x)),r"(?<tok>[a-z][a-z0-9]+( |$))"i=> 
                     x-> (string(dict[rstrip(x)][1]))^length(dict[rstrip(x)][2]))
