@@ -145,7 +145,7 @@ end
 #--                     sign-magnitude                          --
 #-----------------------------------------------------------------
 
-function sigmagni(rep::OffsetVector{Int8})::BigInt
+function signmagni(rep::OffsetVector{Int8})::BigInt
     local modulus::BigInt=radix^(length(rep)-1)
     local t::BigInt=rep[0]
     for i in 1:((axes(rep,1).indices)[end])
@@ -265,8 +265,8 @@ function normalize(expzero::Int64,num::Real,exp::Int64)::Tuple{Int64,Real}
 end
 
 function flbsi(rep::OffsetVector{Int8})::Tuple{Int64,Real}
-    local coeff::BigInt=sigmagni(insertbit(rep[Coef]))
-    local exp::Int64=baisi(rep[Exp])
+    local coeff::BigInt=signmagni(insertbit(rep[Coef]))
+    local exp::Int64=biasi(rep[Exp])
     local num::BigFloat=coeff*BigFloat(base)^(-point)
     (exp,num)
 end
