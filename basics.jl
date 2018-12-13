@@ -322,26 +322,26 @@ function decode(instruction::OffsetArray{Int64, 1},
     form::OffsetArray{Int8,3},
     oplist::OffsetArray{Function,1},
     orop::OffsetArray{Int64,1})::Function
-# OP Code decoding:
-# 11 = opcode
-# 10 = -x-
-# 01 = 1
-# 00 = 0
+    # OP Code decoding:
+    # 11 = opcode
+    # 10 = -x-
+    # 01 = 1
+    # 00 = 0
     local f = form[:; collect(0:length(instruction));:]
  
     let i = size(form)[1] # last match index
         let ty = -1
             while (ty < 0)
             # Check reduce: should reduce in only one dimention
-                if reduce(&, (reduce(|, f[i]) .>= inst)) && reduce(&, (reduce(<, f[i]) .<= inst))
+                if reduce(&, (reduce(|, f[i]) .>= instruction)) && reduce(&, (reduce(<, f[i]) .<= instruction))
                     ty = i
                 else
                     i -= 1
                 end
             end
+            return  oplist[orop[ty] + magni(instruction[findall(x -> x == 1), f[i]])]
         end
     end
-    return oplist[orop[type] + magni(inst[findall(x-> x==1, f[i])])]
 end
 
 end #module
