@@ -327,16 +327,18 @@ function decode(instruction::OffsetArray{Int64, 1},
 # 10 = -x-
 # 01 = 1
 # 00 = 0
-    const f = form[:; collect(0:length(instruction));:]
-
+    local f = form[:; collect(0:length(instruction));:]
+ 
     let i = size(form)[1] # last match index
-    let type = -1
-    while (type < 0)
-    # Check reduce: should reduce in only one dimention
-        if reduce(&, (reduce(|, f[i]) .>= inst)) && reduce(&, (reduce(<, f[i]) .<= inst))
-            type = i
-        else
-            i -= 1
+        let ty = -1
+            while (ty < 0)
+            # Check reduce: should reduce in only one dimention
+                if reduce(&, (reduce(|, f[i]) .>= inst)) && reduce(&, (reduce(<, f[i]) .<= inst))
+                    ty = i
+                else
+                    i -= 1
+                end
+            end
         end
     end
     return oplist[orop[type] + magni(inst[findall(x-> x==1, f[i])])]
