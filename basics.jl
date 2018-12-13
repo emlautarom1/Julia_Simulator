@@ -303,6 +303,7 @@ function inPattern(form::Array{Int8,3},patt::String,dict::Dict{String,Tuple{Stri
     end
     if l>s[2]
         # wide the table form
+        # Check for a more elegant implementation
         local exp::Array{Int8,3}=reshape(zeros(Int8,s[1]*(l-s[2])*s[3]),(s[1],l-s[2],s[3]))
         exp[:,:,1]=reshape(ones(Int8,s[1]*(l-s[2])),s[1],l-s[2],1)
         form=hcat(form,exp)
@@ -310,6 +311,35 @@ function inPattern(form::Array{Int8,3},patt::String,dict::Dict{String,Tuple{Stri
     #add pattern to form
     local entry::Array{Int8,3}=reshape(vec(transpose(map(x-> Int8(x)-48,reshape(collect(p),2,l)))),1,l,2)
     form=vcat(form,entry)
+end
+
+
+#-----------------------------------------------------------------
+#--            Machine Language Interpretation functions        --
+#-----------------------------------------------------------------
+
+function decode(instruction::OffsetArray{Int64, 1},
+    form::OffsetArray{Int8,3},
+    oplist::OffsetArray{Function,1},
+    orop::OffsetArray{Int64,1})::Function
+# OP Code decoding:
+# 11 = opcode
+# 10 = -x-
+# 01 = 1
+# 00 = 0
+    const f = form[:; collect(0:length(instruction));:]
+
+    let i = size(form)[1] # last match index
+    let type = -1
+    while (type < 0)
+    # Check reduce: should reduce in only one dimention
+        if reduce(&, (reduce(|, f[i]) .>= inst)) && reduce(&, (reduce(<, f[i]) .<= inst))
+            type = i
+        else
+            i -= 1
+        end
+    end
+    return oplist[orop[type] + magni(inst[findall(x-> x==1, f[i])])]
 end
 
 end #module
