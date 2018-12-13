@@ -4,7 +4,7 @@
 module pdp11
 using OffsetArrays, basics
 
-export form
+export form, orop
 
 
 #-----------------------------------------------------------------------------
@@ -62,5 +62,10 @@ form=inPattern(form,"0 0 0 0 0 0 0 0 1 0 1 1 Cadr",dict)
 form=inPattern(form,"0 0 0 0 0 0 0 0 0 0 0 0 0 Ope",dict) 
 form=inPattern(form,"1 1 1 1 0 0 0 0 0 0 0 0 0 Ope",dict)
 form=inPattern(form,"1 1 1 1 0 0 0 0 0 0 0 0 1 Ope",dict)
+
+orop=2 .^ reduce(+,reduce(&,form,dims=3),dims=2)
+orop=[reduce(+,orop[1:i]) for i=1:length(orop)]
+loper=pop!(orop)
+pushfirst!(orop,0)
 
 end #module pdp11
