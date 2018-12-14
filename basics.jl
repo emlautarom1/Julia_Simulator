@@ -339,7 +339,7 @@ function decode(instruction::OffsetArray{Int64, 1},
                     i -= 1
                 end
             end
-            return  oplist[orop[ty] + magni(instruction[findall(x -> x == 1), f[i]])]
+            return  oplist[orop[ty] + magni(instruction[findall(vec(reduce(&, form[1,:,:], dims = 2)))])]
         end
     end
 end
