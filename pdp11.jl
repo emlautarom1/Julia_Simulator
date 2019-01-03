@@ -2,7 +2,8 @@
 #--                               pdp-11.jl                                  --
 #------------------------------------------------------------------------------
 module pdp11
-using OffsetArrays, basics
+include("./basics.jl")
+using OffsetArrays, .basics
 
 export form, orop
 
