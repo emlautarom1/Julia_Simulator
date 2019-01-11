@@ -21,11 +21,6 @@ const base=2
 const point=length(Coef)-1
 const expextr=radix^(length(Exp)-1)
 
-struct Val{x}
-end
-
-Val(x)=Val{x}()
-
 #-----------------------------------------------------------------
 #--                     radix complement                        --
 #-----------------------------------------------------------------
@@ -39,7 +34,7 @@ function radixcompi(rep::OffsetVector{Int8})::BigInt
     if t >= (modulus>>1)
         t=t-modulus
     end
-    t
+    return t
 end
 
 function radixcompr(size::Int64,num::BigInt)::Tuple{OffsetVector{Int8},Int64,Int64}
@@ -57,12 +52,12 @@ function radixcompr(size::Int64,num::BigInt)::Tuple{OffsetVector{Int8},Int64,Int
         t[(axes(t,1).indices)[end]-i]=mod(num,radix)
         num=BigInt(floor(num/radix))
     end
-    (t,xmin,xmax)
+    return (t,xmin,xmax)
 end
 
 function radixcompr(size::Int64,num::Int64)::Tuple{OffsetVector{Int8},Int64,Int64}
     local t::BigInt=convert(BigInt,num)
-    radixcompr(size,t)
+    return radixcompr(size,t)
 end
 
 #---------------------------------------------------------
@@ -78,7 +73,7 @@ function digitcompi(rep::OffsetArray{Int8})::BigInt
     if t > (modulus>>1)
         t=t-modulus
     end
-    t
+    return t
 end
 
 function digitcompr(size::Int64,num::BigInt)::Tuple{OffsetVector{Int8},Int64,Int64}
@@ -98,12 +93,12 @@ function digitcompr(size::Int64,num::BigInt)::Tuple{OffsetVector{Int8},Int64,Int
         t[(axes(t,1).indices)[end]-i]=mod(num,radix)
         num=BigInt(floor(num/radix))
     end
-    (t,xmin,xmax)
+    return (t,xmin,xmax)
 end
 
 function digitcompr(size::Int64,num::Int64)::Tuple{OffsetVector{Int8},Int64,Int64}
     local t::BigInt=convert(BigInt,num)
-    digitcompr(size,t)
+    return digitcompr(size,t)
 end
 
 #-----------------------------------------------------------------
@@ -115,7 +110,7 @@ function magni(rep::OffsetVector{Int8})::BigInt
     for i in 1:((axes(rep,1).indices)[end])
         t=(t*radix)+rep[i]
     end
-    t
+    return t
 end
 
 function magnr(size::Int64,num::BigInt)::Tuple{OffsetVector{Int8},Int64,Int64}
@@ -133,12 +128,12 @@ function magnr(size::Int64,num::BigInt)::Tuple{OffsetVector{Int8},Int64,Int64}
         t[(axes(t,1).indices)[end]-i]=mod(num,radix)
         num=BigInt(floor(num/radix))
     end
-    (t,xmin,xmax)
+    return (t,xmin,xmax)
 end
 
 function magnr(size::Int64,num::Int64)::Tuple{OffsetVector{Int8},Int64,Int64}
     local t::BigInt=convert(BigInt,num)
-    magnr(size,t)
+    return magnr(size,t)
 end
 
 #-----------------------------------------------------------------
@@ -152,6 +147,7 @@ function signmagni(rep::OffsetVector{Int8})::BigInt
         t=(t*radix)+rep[i]
     end
     t=BigInt((rep[0]==plus) ? 1 : -1) * mod(t,modulus)
+    return t 
 end
 
 function signmagnr(size::Int64,num::BigInt)::Tuple{OffsetVector{Int8},Int64,Int64}
@@ -173,12 +169,12 @@ function signmagnr(size::Int64,num::BigInt)::Tuple{OffsetVector{Int8},Int64,Int6
         num=BigInt(floor(num/radix))
     end
     t[0]=sign
-    (t,xmin,xmax)
+    return (t,xmin,xmax)
 end
 
 function signmagnr(size::Int64,num::Int64)::Tuple{OffsetVector{Int8},Int64,Int64}
     local t::BigInt=convert(BigInt,num)
-    signmagnr(size,t)
+    return signmagnr(size,t)
 end
 
 #-----------------------------------------------------------------
@@ -191,7 +187,7 @@ function biasi(rep::OffsetVector{Int8})::BigInt
     for i in 1:((axes(rep,1).indices)[end])
         t=(t*radix)+rep[i]
     end
-    t=t-bias
+    return t=t-bias
 end
 
 function biasr(size::Int64,num::BigInt)::Tuple{OffsetVector{Int8},Int64,Int64}
@@ -211,12 +207,12 @@ function biasr(size::Int64,num::BigInt)::Tuple{OffsetVector{Int8},Int64,Int64}
         t[(axes(t,1).indices)[end]-i]=mod(num,radix)
         num=BigInt(floor(num/radix))
     end
-    (t,xmin,xmax)
+    return (t,xmin,xmax)
 end
 
 function biasr(size::Int64,num::Int64)::Tuple{OffsetVector{Int8},Int64,Int64}
     local t::BigInt=convert(BigInt,num)
-    biasr(size,t)
+    return biasr(size,t)
 end
 
 #--------------------------------------------------------------------------
@@ -235,18 +231,18 @@ end
 
 function truncate(num::Real)::BigInt
 # truncation to zero
-    BigInt(sign(num)*floor(abs(num)))
+    return BigInt(sign(num)*floor(abs(num)))
 end
 
 function round(num::Real)::Real
 # algebraic round
-    sign(num)*(floor(0.5+abs(num)))
+    return sign(num)*(floor(0.5+abs(num)))
 end
 
 function trueround(num::Real)::Real
 # unbiased algebraic round
     local bias::Bool=0.5≠mod(abs(num),2)
-    sign(num)*(floor(0.5*bias+abs(num)))
+    return sign(num)*(floor(0.5*bias+abs(num)))
 end
 
 function normalize(expzero::Int64,num::Real,exp::Int64)::Tuple{Int64,Real}
@@ -261,14 +257,14 @@ function normalize(expzero::Int64,num::Real,exp::Int64)::Tuple{Int64,Real}
         exponent=max(expnorm,exp)
     end
     coefficient=num/BigFloat(base)^(exponent-point)
-    (exponent,coefficient)
+    return (exponent,coefficient)
 end
 
 function flbsi(rep::OffsetVector{Int8})::Tuple{Int64,Real}
     local coeff::BigInt=signmagni(insertbit(rep[Coef]))
     local exp::Int64=biasi(rep[Exp])
     local num::BigFloat=coeff*BigFloat(base)^(-point)
-    (exp,num)
+    return (exp,num)
 end
 
 function flbsr(size::Int64,num::Real,exp::Int64)::Tuple{OffsetVector{Int8},Int64,Int64}
@@ -339,7 +335,7 @@ function decode(instruction::OffsetArray{Int64, 1},
                     i -= 1
                 end
             end
-            return  oplist[orop[ty] + magni(instruction[findall(vec(reduce(&, form[1,:,:], dims = 2)))])]
+            return oplist[orop[ty] + magni(instruction[findall(vec(reduce(&, form[1,:,:], dims = 2)))])]
         end
     end
 end

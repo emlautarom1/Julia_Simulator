@@ -3,7 +3,9 @@
 #------------------------------------------------------------------------------
 module pdp11
 include("./basics.jl")
-using OffsetArrays, .basics
+include("./instruction11.jl")
+include("./indicator11.jl")
+using OffsetArrays, .basics, .instruction11, .indicator11
 
 export form, orop
 
@@ -11,19 +13,6 @@ export form, orop
 #-----------------------------------------------------------------------------
 #--                             Sintax PDP-11                               --
 #-----------------------------------------------------------------------------
-const Byte = 0:0
-const Source = 4:9
-const Opcode = 1:3
-const Dest = 10:15
-const Opb = 4:6
-const Opf = 4:7
-const Offset = 8:15
-const Ops = 8:9
-const Cadr = 12:15
-const Ope = 13:15
-const Rfl = 8:9
-const M = 1:3
-const R = 4:6
 
 const dict = Dict{String,Tuple{String,UnitRange{Int64}}}("Byte" => ("10", 0:0),                                   
      "Source" => ("10", 4:9),                                 
