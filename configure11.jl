@@ -7,6 +7,6 @@ using .format11
 # Debug print
 println("Running `configure11.jl`...")
 
-memcap = radix^word
+const memcap = radix^word
 
 end
