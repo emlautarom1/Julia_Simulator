@@ -1,282 +1,303 @@
 module basics
-using OffsetArrays
+
 export +,radix,byte,radixcompi,radixcompr,digitcompi,digitcompr,magni,magnr,signmagni,signmagnr
 export biasi,biasr,hidebit,insertbit,truncate,round,trueround,normalize,flbsi,flbsr
-export inPattern
+export inPattern,decode
 
 import Base.+
-+(of::Int64,r::UnitRange{Int64})::UnitRange{Int64} = UnitRange(r[1]+of,r[end]+of)
-+(r::UnitRange{Int64},of::Int64)::UnitRange{Int64} = +(of,r)
++(of::Int64, r::UnitRange{Int64})::UnitRange{Int64} = UnitRange(r[1] + of, r[end] + of)
++(r::UnitRange{Int64}, of::Int64)::UnitRange{Int64} = +(of, r)
 
-const radix=2
-const log2intradix=(2^(floor(log2(radix)))==radix) ? Int64(log2(radix)) : 0     # 0 when radix is not a power of 2
-
-const plus=0
-const minus=1
-
-const byte=8
-const Exp=1:8
-const Coef= vcat(0, 0,(1+length(Exp))+(0:22))
-const base=2
-const point=length(Coef)-1
-const expextr=radix^(length(Exp)-1)
+const radix = 2
+const plus = 0
+const minus = 1
+const byte = 8
+const Exp = 2:9
+const Coef = vcat(1, 1, (2 + length(Exp)) + (0:22))
+const base = 2
+const point = length(Coef) - 1
+const expextr = radix^(length(Exp) - 1)
 
 #-----------------------------------------------------------------
 #--                     radix complement                        --
 #-----------------------------------------------------------------
 
-function radixcompi(rep::OffsetVector{Int8})::BigInt
-    local t::BigInt=rep[0]
-    local modulus::BigInt=(convert(BigInt,radix))^length(rep)
-    for i in 1:((axes(rep,1).indices)[end])
-        t=t*radix+rep[i]
+function radixcompi(rep::Vector{Int8})::BigInt
+    local t::BigInt = 0;
+    try t = rep[1] catch; return 0 end
+    local modulus::BigInt = (convert(BigInt, radix))^length(rep)
+    for i in 2:(axes(rep, 1)[end])
+        t = t * radix + rep[i]
     end
-    if t >= (modulus>>1)
-        t=t-modulus
+    if t >= (modulus >> 1)
+        t = t - modulus
     end
-    return t
+    t
 end
 
-function radixcompr(size::Int64,num::BigInt)::Tuple{OffsetVector{Int8},Int64,Int64}
-    local xmin=0
-    local xmax=0
+function radixcompr(size::Int64, num::BigInt)::Tuple{Vector{Int8},Int64,Int64}
+    local xmin = 0
+    local xmax = 0
 
-    t::OffsetArray{Int8}=zeros(Int8,0:size-1)
-    local extr::BigInt=div((convert(BigInt,radix))^size,2)
-    if num>=extr
-        xmax=1
-    elseif num<-extr
-        xmin=1
+    t::Array{Int8} = zeros(Int8, size)
+    local extr::BigInt = div((convert(BigInt, radix))^size, 2)
+    if num >= extr
+        xmax = 1
+    elseif num < -extr
+        xmin = 1
     end
-    for i in axes(t,1).indices
-        t[(axes(t,1).indices)[end]-i]=mod(num,radix)
-        num=BigInt(floor(num/radix))
+    for i in axes(t, 1)
+        t[axes(t, 1)[end] - i + 1] = mod(num, radix)
+        num = BigInt(floor(num / radix))
     end
-    return (t,xmin,xmax)
+    (t, xmin, xmax)
 end
 
-function radixcompr(size::Int64,num::Int64)::Tuple{OffsetVector{Int8},Int64,Int64}
-    local t::BigInt=convert(BigInt,num)
-    return radixcompr(size,t)
+function radixcompr(size::Int64, num::Int64)::Tuple{Vector{Int8},Int64,Int64}
+    local t::BigInt = convert(BigInt, num)
+    radixcompr(size, t)
 end
 
 #---------------------------------------------------------
 #--                 digit complement                    --
 #---------------------------------------------------------
 
-function digitcompi(rep::OffsetArray{Int8})::BigInt
-    local t::BigInt=rep[0]
-    local modulus::BigInt=(convert(BigInt,radix))^length(rep)-1
-    for i in 1:((axes(rep,1).indices)[end])
-        t=t*radix+rep[i]
+function digitcompi(rep::Array{Int8})::BigInt
+    local t::BigInt = 0
+    try t = rep[1] catch; return 0 end
+    local modulus::BigInt = (convert(BigInt, radix))^length(rep) - 1
+    for i in 2:axes(rep, 1)[end]
+        t = t * radix + rep[i]
     end
-    if t > (modulus>>1)
-        t=t-modulus
+    if t >= modulus / 2
+        t = t - modulus
     end
-    return t
+    t
 end
 
-function digitcompr(size::Int64,num::BigInt)::Tuple{OffsetVector{Int8},Int64,Int64}
-    local xmin=0
-    local xmax=0
+function digitcompr(size::Int64, num::BigInt)::Tuple{Vector{Int8},Int64,Int64}
+    local xmin = 0
+    local xmax = 0
 
-    t::OffsetArray{Int8}=zeros(Int8,0:size-1)
-    local extr::BigInt=(convert(BigInt,radix))^(size-1)
-    local modulus::BigInt=extr*radix-1
-    if num>=extr
-        xmax=1
-    elseif num<=-extr
-        xmin=1
+    t::Vector{Int8} = zeros(Int8, size)
+    local extr::BigInt = (convert(BigInt, radix))^(size - 1)
+    local modulus::BigInt = extr * radix - 1
+    if num >= extr
+        xmax = 1
+    elseif num <= -extr
+        xmin = 1
     end
-    num=mod(num,modulus)
-    for i in axes(t,1).indices
-        t[(axes(t,1).indices)[end]-i]=mod(num,radix)
-        num=BigInt(floor(num/radix))
+    num = mod(num, modulus)
+    for i in axes(t, 1)
+        t[axes(t, 1)[end] - i + 1] = mod(num, radix)
+        num = BigInt(floor(num / radix))
     end
-    return (t,xmin,xmax)
+    (t, xmin, xmax)
 end
 
-function digitcompr(size::Int64,num::Int64)::Tuple{OffsetVector{Int8},Int64,Int64}
-    local t::BigInt=convert(BigInt,num)
-    return digitcompr(size,t)
+function digitcompr(size::Int64, num::Int64)::Tuple{Vector{Int8},Int64,Int64}
+    local t::BigInt = convert(BigInt, num)
+    digitcompr(size, t)
 end
 
 #-----------------------------------------------------------------
 #--                        magnitude                            --
 #-----------------------------------------------------------------
 
-function magni(rep::OffsetVector{Int8})::BigInt
-    local t::BigInt=rep[0]
-    for i in 1:((axes(rep,1).indices)[end])
-        t=(t*radix)+rep[i]
+function magni(rep::Vector{Int8})::BigInt
+    if isempty(rep)
+        0
+    else
+        local t::BigInt = 0
+        for i in rep[2:end] 
+            t = (t * radix) + i
+        end
+        t
     end
-    return t
 end
 
-function magnr(size::Int64,num::BigInt)::Tuple{OffsetVector{Int8},Int64,Int64}
-    local xmin=0
-    local xmax=0
+function magnr(size::Int64, num::BigInt)::Tuple{Vector{Int8},Int64,Int64}
+    local xmin = 0
+    local xmax = 0
 
-    t::OffsetArray{Int8}=zeros(Int8,0:size-1)
-    local extr::BigInt=(convert(BigInt,radix))^size
-    if num>=extr
-        xmax=1
-    elseif num<0
-        xmin=1
+    t::Array{Int8} = zeros(Int8, size)
+    local extr::BigInt = BigInt(radix)^size
+    if num >= extr
+        xmax = 1
+    elseif num < 0
+        xmin = 1
     end
-    for i in axes(t,1).indices
-        t[(axes(t,1).indices)[end]-i]=mod(num,radix)
-        num=BigInt(floor(num/radix))
+    for i in axes(t, 1)
+        t[axes(t, 1)[end] - i + 1] = mod(num, radix)
+        num = BigInt(floor(num / radix))
     end
-    return (t,xmin,xmax)
+    (t, xmin, xmax)
 end
 
-function magnr(size::Int64,num::Int64)::Tuple{OffsetVector{Int8},Int64,Int64}
-    local t::BigInt=convert(BigInt,num)
-    return magnr(size,t)
+function magnr(size::Int64, num::Int64)::Tuple{Vector{Int8},Int64,Int64}
+    local t::BigInt = convert(BigInt, num)
+    magnr(size, t)
 end
 
 #-----------------------------------------------------------------
 #--                     sign-magnitude                          --
 #-----------------------------------------------------------------
 
-function signmagni(rep::OffsetVector{Int8})::BigInt
-    local modulus::BigInt=radix^(length(rep)-1)
-    local t::BigInt=rep[0]
-    for i in 1:((axes(rep,1).indices)[end])
-        t=(t*radix)+rep[i]
+function signmagni(rep::Vector{Int8})::BigInt
+    try local t::BigInt = rep[1] catch; return 0 end
+    local modulus::BigInt = radix^(length(rep) - 1)
+    for i in 2:axes(rep, 1)[end]
+        t = (t * radix) + rep[i]
     end
-    t=BigInt((rep[0]==plus) ? 1 : -1) * mod(t,modulus)
-    return t 
+    t = BigInt((floor(t / modulus) == 0) ? 1 : -1) * mod(t, modulus)
 end
 
-function signmagnr(size::Int64,num::BigInt)::Tuple{OffsetVector{Int8},Int64,Int64}
-    local xmin=0
-    local xmax=0
+function signmagnr(size::Int64, num::BigInt)::Tuple{Vector{Int8},Int64,Int64}
+    local xmin = 0
+    local xmax = 0
     local sign
 
-    t::OffsetArray{Int8}=zeros(Int8,0:size-1)
-    local extr::BigInt=(convert(BigInt,radix))^(size-1)
-    if num>=extr
-        xmax=1
-    elseif num<=-extr
-        xmin=1
+    t::Array{Int8} = zeros(Int8, size)
+    local extr::BigInt = (convert(BigInt, radix))^(size - 1)
+    if num >= extr
+        xmax = 1
+    elseif num <= -extr
+        xmin = 1
     end
-    sign=(num<0) ? minus : plus
-    num=(num<0) ? -num : num
-    for i in 0:((axes(t,1).indices)[end]-1)
-        t[(axes(t,1).indices)[end]-i]=mod(num,radix)
-        num=BigInt(floor(num/radix))
+    sign = (num < 0) ? minus : plus
+    num = abs(num)
+    for i in axes(t, 1)
+        t[axes(t, 1)[end] - i + 1] = mod(num, radix)
+        num = BigInt(floor(num / radix))
     end
-    t[0]=sign
-    return (t,xmin,xmax)
+    t[1] = sign
+    (t, xmin, xmax)
 end
 
-function signmagnr(size::Int64,num::Int64)::Tuple{OffsetVector{Int8},Int64,Int64}
-    local t::BigInt=convert(BigInt,num)
-    return signmagnr(size,t)
+function signmagnr(size::Int64, num::Int64)::Tuple{Vector{Int8},Int64,Int64}
+    local t::BigInt = convert(BigInt, num)
+    signmagnr(size, t)
 end
 
 #-----------------------------------------------------------------
 #--                     bias radix^n/2                          --
 #-----------------------------------------------------------------
 
-function biasi(rep::OffsetVector{Int8})::BigInt
-    local bias::BigInt=div(radix^length(rep),2)
-    local t::BigInt=rep[0]
-    for i in 1:((axes(rep,1).indices)[end])
-        t=(t*radix)+rep[i]
+function biasi(rep::Vector{Int8})::BigInt
+    local bias::BigInt = div(radix^length(rep), 2)
+    try local t::BigInt = rep[1] catch; return 0 end
+    for i in 2:axes(rep, 1)[end]
+        t = (t * radix) + rep[i]
     end
-    return t=t-bias
+    t = t - bias
 end
 
-function biasr(size::Int64,num::BigInt)::Tuple{OffsetVector{Int8},Int64,Int64}
-    local xmin=0
-    local xmax=0
+function biasr(size::Int64, num::BigInt)::Tuple{Vector{Int8},Int64,Int64}
+    local xmin = 0
+    local xmax = 0
     local sign
 
-    t::OffsetArray{Int8}=zeros(Int8,0:size-1)
-    local bias::BigInt=div((convert(BigInt,radix))^size,2)
-    if num>=bias
-        xmax=1
-    elseif num<-bias
-        xmin=1
+    t::Array{Int8} = zeros(Int8, size)
+    local bias::BigInt = div((convert(BigInt, radix))^size, 2)
+    if num >= bias
+        xmax = 1
+    elseif num < -bias
+        xmin = 1
     end
-    num=num+bias
-    for i in (axes(t,1).indices)
-        t[(axes(t,1).indices)[end]-i]=mod(num,radix)
-        num=BigInt(floor(num/radix))
+    num = num + bias
+    for i in axes(t, 1)
+        t[axes(t, 1)[end] - i + 1] = mod(num, radix)
+        num = BigInt(floor(num / radix))
     end
-    return (t,xmin,xmax)
+    (t, xmin, xmax)
 end
 
-function biasr(size::Int64,num::Int64)::Tuple{OffsetVector{Int8},Int64,Int64}
-    local t::BigInt=convert(BigInt,num)
-    return biasr(size,t)
+function biasr(size::Int64, num::Int64)::Tuple{Vector{Int8},Int64,Int64}
+    local t::BigInt = convert(BigInt, num)
+    biasr(size, t)
+end
+
+function wide(sz, in)
+    local dim = (sz, Int64(ceil(size(vec(in))[1] / sz)))
+    local z = zeros(eltype(in), reduce(*, dim) - length(in))
+    in = Array{eltype(in),2}(transpose(reshape(vcat(z, vec(in)), dim)))
 end
 
 #--------------------------------------------------------------------------
 #--                      floating-point functions                        --
 #--------------------------------------------------------------------------
 
-function hidebit(rep::OffsetVector{Int8})::OffsetVector{Int8}
-    rep[1]=rep[0]
+function hidebit(rep::Vector{Int8})::Vector{Int8}
+    rep[2] = rep[1]
     return rep
 end
 
-function insertbit(rep::OffsetVector{Int8})::OffsetVector{Int8}
-    rep[1]=1
+function insertbit(rep::Vector{Int8})::Vector{Int8}
+    rep[2] = 1
     return rep
 end
 
 function truncate(num::Real)::BigInt
 # truncation to zero
-    return BigInt(sign(num)*floor(abs(num)))
+    BigInt(sign(num) * floor(abs(num)))
 end
 
 function round(num::Real)::Real
 # algebraic round
-    return sign(num)*(floor(0.5+abs(num)))
+    sign(num) * (floor(0.5 + abs(num)))
 end
 
 function trueround(num::Real)::Real
 # unbiased algebraic round
-    local bias::Bool=0.5≠mod(abs(num),2)
-    return sign(num)*(floor(0.5*bias+abs(num)))
+    local bias::Bool = 0.5 ≠ mod(abs(num), 2)
+    sign(num) * (floor(0.5 * bias + abs(num)))
 end
 
-function normalize(expzero::Int64,num::Real,exp::Int64)::Tuple{Int64,Real}
+function normalize(expzero::Int64, num::Real, exp::Int64)::Tuple{Int64,Real}
     local exponent::Int64
     local expnorm::Int64
     local coefficient::Real
 
-    if num==0
-        exponent=expzero
+    if num == 0
+        exponent = expzero
     else
-        expnorm=floor(1+log(base,abs(num))+point-(length(Coef)-1)*log(base,radix))
-        exponent=max(expnorm,exp)
+        expnorm = floor(1 + log(base, abs(num)) + point - (length(Coef) - 1) * log(base, radix))
+        exponent = max(expnorm, exp)
     end
-    coefficient=num/BigFloat(base)^(exponent-point)
-    return (exponent,coefficient)
+    coefficient = num / BigFloat(base)^(exponent - point)
+    (exponent, coefficient)
 end
 
-function flbsi(rep::OffsetVector{Int8})::Tuple{Int64,Real}
-    local coeff::BigInt=signmagni(insertbit(rep[Coef]))
-    local exp::Int64=biasi(rep[Exp])
-    local num::BigFloat=coeff*BigFloat(base)^(-point)
-    return (exp,num)
+function flbsi(rep::Vector{Int8})::Tuple{Int64,Real}
+    local coeff::BigInt = signmagni(insertbit(rep[Coef]))
+    local exp::Int64 = biasi(rep[Exp])
+    local num::BigFloat = coeff * BigFloat(base)^(-point)
+    (exp, num)
 end
 
-function flbsr(size::Int64,num::Real,exp::Int64)::Tuple{OffsetVector{Int8},Int64,Int64}
-    local rep::OffsetVector{Int8}=zeros(Int8,0:size-1)
-    local t,xmax,xmin
+function flbsr(size::Int64, num::Real, exp::Int64)::Tuple{Vector{Int8},Int64,Int64,Int64,Int64}
+    local rep::Vector{Int8} = zeros(Int8, size)
+    local t, xmax, xmin
 
-    exponent,coefficient=normalize(-expextr,num,-expextr)
-    t=signmagnr(length(Coef),BigInt(basics.truncate(coefficient)))[1]
-    rep[Exp],xmin,xmax=biasr(length(Exp),BigInt(exponent))
-    rep[0]=t[0]
-    rep[Coef[3]:Coef[end]]=t[2:end]
-    return rep,xmin,xmax
+    exponent, coefficient = normalize(-expextr, num, -expextr)
+    t, xmin, xmax = signmagnr(length(Coef), BigInt(basics.truncate(coefficient)))
+    rep[Exp], xmin, xmax = biasr(length(Exp), BigInt(exponent))
+    rep[1] = t[1]
+    rep[Coef[3]:Coef[end]] = t[3:end]
+    local all_zeros = all(x->x == 0, rep[2:end])
+    if num < 0.0                          
+        if all_zeros                                #very small denormal
+            return (rep, 0, 1, 0, 0)            
+        else
+            return (rep, xmax, xmin, 0, 0)
+        end
+    else
+        if all_zeros && num > 0.0                     #very small denormal
+            return (rep, 0, 0, 1, 0)
+        else
+            return (rep, 0, 0, xmin, xmax)
+        end
+    end
 end
 
 #---------------------------------------------------------------------------------
@@ -288,25 +309,25 @@ end
 #--                   "OpCode"=>("11",1:3),                                     --
 #--                   "Dest"=>("10",10:15))                                     --
 #---------------------------------------------------------------------------------
-function inPattern(form::Array{Int8,3},patt::String,dict::Dict{String,Tuple{String,UnitRange{Int64}}})::Array{Int8,3}
-    local s=size(form)
-    local p=replace(replace(patt,r"(0|1)( |$)" => x->"0"*rstrip(x)),r"(?<tok>[a-z][a-z0-9]+( |$))"i=> 
-                    x-> (string(dict[rstrip(x)][1]))^length(dict[rstrip(x)][2]))
-    local l=div(length(p),2)
-    if l<s[2]
-        p=rpad(p,s[2]<<1,"10")
-        l=s[2]
+function inPattern(form::Array{Int8,3}, patt::String, dict::Dict{String,Tuple{String,UnitRange{Int64}}})::Array{Int8,3}
+    local s = size(form)
+    local p = replace(replace(patt, r"(0|1)( |$)" => x->"0" * rstrip(x)), r"(?<tok>[a-z][a-z0-9]+( |$))"i => 
+                    x->(string(dict[rstrip(x)][1]))^length(dict[rstrip(x)][2]))
+    local l = div(length(p), 2)
+    if l < s[2]
+        p = rpad(p, s[2] << 1, "10")
+        l = s[2]
     end
-    if l>s[2]
+    if l > s[2]
         # wide the table form
         # Check for a more elegant implementation
-        local exp::Array{Int8,3}=reshape(zeros(Int8,s[1]*(l-s[2])*s[3]),(s[1],l-s[2],s[3]))
-        exp[:,:,1]=reshape(ones(Int8,s[1]*(l-s[2])),s[1],l-s[2],1)
-        form=hcat(form,exp)
+        local exp = reshape(zeros(Int8, s[1] * (l - s[2]) * s[3]), (s[1], l - s[2], s[3]))
+        exp[:,:,1] = reshape(ones(Int8, s[1] * (l - s[2])), s[1], l - s[2], 1)
+        form = hcat(form, exp)
     end
     #add pattern to form
-    local entry::Array{Int8,3}=reshape(vec(transpose(map(x-> Int8(x)-48,reshape(collect(p),2,l)))),1,l,2)
-    form=vcat(form,entry)
+    local entry = reshape(vec(transpose(map(x->Int8(x) - 48, reshape(collect(p), 2, l)))), 1, l, 2)
+    form = vcat(form, entry)
 end
 
 
@@ -314,28 +335,29 @@ end
 #--            Machine Language Interpretation functions        --
 #-----------------------------------------------------------------
 
-function decode(instruction::OffsetArray{Int64, 1},
-    form::OffsetArray{Int8,3},
-    oplist::OffsetArray{Function,1},
-    orop::OffsetArray{Int64,1})::Function
+function decode(inst::Array{Int8,1}, 
+                form::Array{Int8,3}, 
+                oplist::Array{Function,1}, 
+                orop::Array{Int64,1})::Function
     # OP Code decoding:
     # 11 = opcode
     # 10 = -x-
     # 01 = 1
     # 00 = 0
-    local f = form[:; collect(0:length(instruction));:]
+    local f = form[:, collect(1:length(inst)),:]
  
     let i = size(form)[1] # last match index
         let ty = -1
             while (ty < 0)
-            # Check reduce: should reduce in only one dimention
-                if reduce(&, (reduce(|, f[i]) .>= instruction)) && reduce(&, (reduce(<, f[i]) .<= instruction))
+            # Check reduce: should reduce in only one dimension
+                if reduce(&, (map(|, f[i,:,1], f[i,:,2]) .>= inst)) && reduce(&, (map(<, f[i,:,1], f[i,:,2]) .<= inst))
                     ty = i
                 else
                     i -= 1
                 end
             end
-            return oplist[orop[ty] + magni(instruction[findall(vec(reduce(&, form[1,:,:], dims = 2)))])]
+            local off = Int64(magni(inst[findall(x->x == 1, map(&, f[i,:,1], f[i,:,2]))]))
+            return  oplist[orop[ty] + off]
         end
     end
 end

@@ -5,9 +5,10 @@ module pdp11
 include("./basics.jl")
 include("./instruction11.jl")
 include("./indicator11.jl")
-using OffsetArrays, .basics, .instruction11, .indicator11
+include("./inst_set11.jl")
+using .basics, .instruction11, .indicator11, .inst_set11
 
-export form, orop
+export form, orop, oplist
 
 
 #-----------------------------------------------------------------------------
@@ -56,5 +57,6 @@ orop = (2).^reduce(+, reduce(&, form, dims = 3), dims = 2)
 orop = [reduce(+, orop[1:i]) for i = 1:length(orop)]
 loper = pop!(orop)
 pushfirst!(orop, 0)
+orop = orop .+ 1
 
 end #module pdp11

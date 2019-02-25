@@ -1,6 +1,13 @@
 module inst_set11
 
-# export `implemented functions`
+export oplist
+
+#------------------------------------
+#--      invalid Instructions      --
+#------------------------------------
+function i()
+    println("Invalid instruction!")
+end
 
 # ------------------------------------
 # -- Data Manipulation Instructions --
@@ -344,5 +351,248 @@ function LDCI()
     #   flreg[fld Rfl;⍳size11fl]←size11fl fl11r operand
     #   signal11FNZO operand
 end
+
+# --------------------------------
+# --      TODO: Categorize      --
+# --------------------------------
+
+function CMP()
+
+end
+
+function SOB()
+
+end
+
+function BR()
+
+end
+
+function BNE()
+
+end
+
+function BEQ()
+
+end
+
+function BGE()
+
+end
+
+function BLT()
+
+end
+
+function BGT()
+
+end
+
+function BLE()
+
+end
+
+function BPL()
+
+end
+
+function BMI()
+
+end
+
+function BHI()
+
+end
+
+function BLOS()
+
+end
+
+function BVC()
+
+end
+
+function BVS()
+
+end
+
+function BCC()
+
+end
+
+function BCS()
+
+end
+
+function EMT()
+
+end
+
+function TRAP()
+
+end
+
+function MULF()
+
+end
+
+function MODF()
+
+end
+
+function ADDF()
+
+end
+
+function ADLF()
+
+end
+
+function LDF()
+
+end
+
+function SUBF()
+
+end
+
+function CMPF()
+
+end
+
+function STF()
+
+end
+
+function DIVF()
+
+end
+
+function STEX()
+
+end
+
+function STCI()
+
+end
+
+function STCF()
+
+end
+
+function LDEX()
+
+end
+
+function LDCF()
+
+end
+
+function JSR()
+
+end
+
+function INC()
+
+end
+
+function JMP()
+
+end
+
+function MARK()
+
+end
+
+function LDFS()
+
+end
+
+function STFS()
+
+end
+
+function STST()
+
+end
+
+function TSTF()
+
+end
+
+function ABSF()
+
+end
+
+function NEGF()
+
+end
+
+function RTS()
+
+end
+
+function SPL()
+
+end
+
+function CLCC()
+
+end
+
+function SECC()
+
+end
+
+function HALT()
+
+end
+
+function WAIT()
+
+end
+
+function RTI()
+
+end
+
+function BPT()
+
+end
+
+function IOT()
+
+end
+
+function RSET()
+
+end
+
+function RTT()
+
+end
+
+function CFCC()
+
+end
+
+function SETF()
+
+end
+
+function SETI()
+
+end
+
+function SETD()
+
+end
+
+function SETL()
+
+end
+
+
+oplist = [i, MOV, CMP, BIT, BIC, BIS, i, i, ADD, SUB, MUL, DIV, ASH, ASHC, XOR, i, i, SOB, i, BR, BNE, BEQ, BGE, BLT, BGT, BLE, i, i, i, i, i, i, i, i, BPL, BMI, BHI, BLOS, BVC, BVS, BCC, BCS, EMT, TRAP, i, i, i, i, i, i, i, i, MULF, MODF, ADDF, LDF, SUBF, CMPF, STF, DIVF, STEX, STCI, STCF, LDEX, LDCI, LDCF, JSR, CLR, COM, INC, DEC, NEG, ADC, SBC, TST, ROR, ROL, ASR, ASL, i, JMP, i, SWAB, MARK, i, i, SXT, i, LDFS, STFS, STST, CLRF, TSTF, ABSF, NEGF, RTS, SPL, CLCC, SECC, HALT, WAIT, RTI, BPT, IOT, RSET, RTT, i, CFCC, SETF, SETI, i, i, i, i, i, i, SETD, SETL, i, i, i, i, i]
 
 end
