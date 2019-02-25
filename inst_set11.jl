@@ -1,6 +1,14 @@
 module inst_set11
 
-# export `implemented functions`
+export oplist
+
+#------------------------------------
+#--      invalid Instructions      --
+#------------------------------------
+function i()
+    println("instrucci'on inv'alida")
+end
+
 
 # ------------------------------------
 # -- Data Manipulation Instructions --
@@ -144,6 +152,7 @@ function SWAB()
     # Carry stin 0
     # signal11NZ r1
 end
+
 
 # -------------------------------
 # -- Arithmetical Instructions --
@@ -327,6 +336,15 @@ function TST()
     # Carry stin 0
 end
 
+function CMP()
+
+end
+
+function INC()
+
+end
+
+
 # --------------------------------
 # -- Floating-point Instruction --
 # --------------------------------
@@ -344,5 +362,251 @@ function LDCI()
     #   flreg[fld Rfl;⍳size11fl]←size11fl fl11r operand
     #   signal11FNZO operand
 end
+
+function LDFS()
+
+end
+
+function STFS()
+
+end
+
+function TSTF()
+
+end
+
+function STST()
+
+end
+
+function ABSF()
+
+end
+
+function NEGF()
+
+end
+
+function STCI()
+    # STCI DEC PDP11 (store to integer)
+end
+  
+function STEX()
+    # STEX DEC PDP11 (store exp's of floating point)
+end
+  
+function ADDF()
+# ADDF de PDP11 (floating point add)
+end
+
+function MODF()
+# MODF de PDP11 (floating point module)
+end
+
+function MULF()
+
+end
+
+function LDF()
+
+end
+function SUBF()
+
+end
+function CMPF()
+
+end
+function STF()
+
+end
+function DIVF()
+
+end
+
+function STCF()
+
+end
+
+function LDEX()
+
+end
+
+function LDCF()
+
+end
+
+function TESTF()
+
+end
+  
+#----------------------------
+#-- Instruction Sequencing --
+#----------------------------
+function JMP()
+
+end
+
+function SOB()
+# SOB de PDP11
+end
+
+function BR()
+# BR de PDP11 (incoditional branch)
+end
+
+function BNE()
+# BNE de PDP11 (not equal branch)
+end
+
+function BEQ()
+# BEQ de PDP11 (equal branch)
+end
+
+function BLT()
+
+end
+
+function BGT()
+
+end
+
+function BGE()
+
+end
+
+function BLE()
+
+end
+
+function BPL()
+
+end
+
+function BMI()
+
+end
+
+function BHI()
+
+end
+
+function BLOS()
+
+end
+
+function BVC()
+
+end
+
+function BVS()
+
+end
+
+function BCC()
+
+end
+
+function BCS()
+
+end
+
+function EMT()
+
+end
+
+function TRAP()
+
+end
+
+function JSR()
+
+end
+
+function RTS()
+
+end
+
+function HALT
+
+end
+
+function WAIT()
+
+end
+
+function RTI()
+
+end
+
+#------------------------------------------------
+#--         Miscelaneous Instruction           --
+#------------------------------------------------
+
+function MARK()
+
+end
+
+function SPL()
+
+end
+
+function CLCC()
+
+end
+
+function SECC()
+
+end
+
+function BPT()
+
+end
+
+function IOT()
+
+end
+
+function RSET()
+
+end
+
+function RTT()
+
+end
+
+function CFCC()
+
+end
+
+function SETF()
+
+end
+
+function SETI()
+
+end
+
+function SETD()
+
+end
+
+function SETL()
+
+end
+
+
+
+
+#-----------------------------------------------------------------
+#--                     oplist                                  --
+#-----------------------------------------------------------------
+oplist=[i,MOV,CMP,BIT,BIC,BIS,i,i,ADD,SUB,MUL,DIV,ASH,ASHC,XOR,i,
+        i,SOB,i,BR,BNE,BEQ,BGE,BLT,BGT,BLE,i,i,i,i,i,i,
+        i,i,BPL,BMI,BHI,BLOS,BVC,BVS,BCC,BCS,EMT,TRAP,i,i,i,i,
+        i,i,i,i,MULF,MODF,ADDF,LDF,SUBF,CMPF,STF,DIVF,STEX,STCI,STCF,LDEX,
+        LDCI,LDCF,JSR,CLR,COM,INC,DEC,NEG,ADC,SBC,TST,ROR,ROL,ASR,ASL,i,
+        JMP,i,SWAB,MARK,i,i,SXT,i,LDFS,STFS,STST,CLRF,TSTF,ABSF,NEGF,RTS,
+        SPL,CLCC,SECC,HALT,WAIT,RTI,BPT,IOT,RSET,RTT,i,CFCC,SETF,SETI,i,i,
+        i,i,i,i,SETD,SETL,i,i,i,i,i]
 
 end
