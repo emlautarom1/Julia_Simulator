@@ -36,7 +36,8 @@ function radixcompi(rep::Vector{Int8})::BigInt
     if t >= (modulus>>1)
         t=t-modulus
     end
-    t
+    
+    return t
 end
 
 function radixcompr(size::Int64,num::BigInt)::Tuple{Vector{Int8},Int64,Int64}
@@ -54,12 +55,13 @@ function radixcompr(size::Int64,num::BigInt)::Tuple{Vector{Int8},Int64,Int64}
         t[axes(t,1)[end]-i+1]=mod(num,radix)
         num=BigInt(floor(num/radix))
     end
-    (t,xmin,xmax)
+
+    return (t,xmin,xmax)
 end
 
 function radixcompr(size::Int64,num::Int64)::Tuple{Vector{Int8},Int64,Int64}
     local t::BigInt=convert(BigInt,num)
-    radixcompr(size,t)
+    return radixcompr(size,t)
 end
 
 #---------------------------------------------------------
@@ -76,7 +78,8 @@ function digitcompi(rep::Array{Int8})::BigInt
     if t >= modulus/2
         t=t-modulus
     end
-    t
+    
+    return t
 end
 
 function digitcompr(size::Int64,num::BigInt)::Tuple{Vector{Int8},Int64,Int64}
@@ -96,12 +99,14 @@ function digitcompr(size::Int64,num::BigInt)::Tuple{Vector{Int8},Int64,Int64}
         t[axes(t,1)[end]-i+1]=mod(num,radix)
         num=BigInt(floor(num/radix))
     end
-    (t,xmin,xmax)
+    
+    return (t,xmin,xmax)
 end
 
 function digitcompr(size::Int64,num::Int64)::Tuple{Vector{Int8},Int64,Int64}
     local t::BigInt=convert(BigInt,num)
-    digitcompr(size,t)
+    
+    return digitcompr(size,t)
 end
 
 #-----------------------------------------------------------------
@@ -109,11 +114,13 @@ end
 #-----------------------------------------------------------------
 
 function magni(rep::Vector{Int8})::BigInt
-    try local t::BigInt=rep[1] catch; return 0 end
+    local t::BigInt=0
+    try t=rep[1] catch; return 0 end
     for i in 2:axes(rep,1)[end]
         t=(t*radix)+rep[i]
     end
-    t
+    
+    return t
 end
 
 function magnr(size::Int64,num::BigInt)::Tuple{Vector{Int8},Int64,Int64}
@@ -131,12 +138,13 @@ function magnr(size::Int64,num::BigInt)::Tuple{Vector{Int8},Int64,Int64}
         t[axes(t,1)[end]-i+1]=mod(num,radix)
         num=BigInt(floor(num/radix))
     end
-    (t,xmin,xmax)
+    
+    return (t,xmin,xmax)
 end
 
 function magnr(size::Int64,num::Int64)::Tuple{Vector{Int8},Int64,Int64}
     local t::BigInt=convert(BigInt,num)
-    magnr(size,t)
+    return magnr(size,t)
 end
 
 #-----------------------------------------------------------------
@@ -144,12 +152,14 @@ end
 #-----------------------------------------------------------------
 
 function signmagni(rep::Vector{Int8})::BigInt
-    try local t::BigInt=rep[1] catch; return 0 end
+    local t::BigInt=0
+    try t=rep[1] catch; return 0 end
     local modulus::BigInt=radix^(length(rep)-1)
     for i in 2:axes(rep,1)[end]
         t=(t*radix)+rep[i]
     end
-    t=BigInt((floor(t/modulus)==0) ? 1 : -1) * mod(t,modulus)
+
+    return t=BigInt((floor(t/modulus)==0) ? 1 : -1) * mod(t,modulus)
 end
 
 function signmagnr(size::Int64,num::BigInt)::Tuple{Vector{Int8},Int64,Int64}
@@ -171,12 +181,13 @@ function signmagnr(size::Int64,num::BigInt)::Tuple{Vector{Int8},Int64,Int64}
         num=BigInt(floor(num/radix))
     end
     t[1]=sign
-    (t,xmin,xmax)
+    
+    return (t,xmin,xmax)
 end
 
 function signmagnr(size::Int64,num::Int64)::Tuple{Vector{Int8},Int64,Int64}
     local t::BigInt=convert(BigInt,num)
-    signmagnr(size,t)
+    return signmagnr(size,t)
 end
 
 #-----------------------------------------------------------------
@@ -185,11 +196,13 @@ end
 
 function biasi(rep::Vector{Int8})::BigInt
     local bias::BigInt=div(radix^length(rep),2)
-    try local t::BigInt=rep[1] catch; return 0 end
+    local t::BigInt=0
+    try t=rep[1] catch; return 0 end
     for i in 2:axes(rep,1)[end]
         t=(t*radix)+rep[i]
     end
-    t=t-bias
+    
+    return t=t-bias
 end
 
 function biasr(size::Int64,num::BigInt)::Tuple{Vector{Int8},Int64,Int64}
@@ -209,7 +222,8 @@ function biasr(size::Int64,num::BigInt)::Tuple{Vector{Int8},Int64,Int64}
         t[axes(t,1)[end]-i+1]=mod(num,radix)
         num=BigInt(floor(num/radix))
     end
-    (t,xmin,xmax)
+    
+    return (t,xmin,xmax)
 end
 
 function biasr(size::Int64,num::Int64)::Tuple{Vector{Int8},Int64,Int64}
@@ -239,18 +253,18 @@ end
 
 function truncate(num::Real)::BigInt
 # truncation to zero
-    BigInt(sign(num)*floor(abs(num)))
+    return BigInt(sign(num)*floor(abs(num)))
 end
 
 function round(num::Real)::Real
 # algebraic round
-    sign(num)*(floor(0.5+abs(num)))
+    return sign(num)*(floor(0.5+abs(num)))
 end
 
 function trueround(num::Real)::Real
 # unbiased algebraic round
     local bias::Bool=0.5≠mod(abs(num),2)
-    sign(num)*(floor(0.5*bias+abs(num)))
+    return sign(num)*(floor(0.5*bias+abs(num)))
 end
 
 function normalize(expzero::Int64,num::Real,exp::Int64)::Tuple{Int64,Real}
@@ -265,14 +279,16 @@ function normalize(expzero::Int64,num::Real,exp::Int64)::Tuple{Int64,Real}
         exponent=max(expnorm,exp)
     end
     coefficient=num/BigFloat(base)^(exponent-point)
-    (exponent,coefficient)
+    
+    return (exponent,coefficient)
 end
 
 function flbsi(rep::Vector{Int8})::Tuple{Int64,Real}
     local coeff::BigInt=signmagni(insertbit(rep[Coef]))
     local exp::Int64=biasi(rep[Exp])
     local num::BigFloat=coeff*BigFloat(base)^(-point)
-    (exp,num)
+    
+    return (exp,num)
 end
 
 function flbsr(size::Int64,num::Real,exp::Int64)::Tuple{Vector{Int8},Int64,Int64,Int64,Int64}
