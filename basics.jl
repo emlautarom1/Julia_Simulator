@@ -127,6 +127,16 @@ function magni(rep::Vector{Int8})::BigInt
     end
 end
 
+function magn0i(rep::Vector{Int8})::BigInt
+    if (isempty(rep))
+        return 0
+    else
+        local modulus = radix^(rep[end])
+        local value = magni(rep)
+        return value + modulus^(value == 0)
+    end
+end
+
 function magnr(size::Int64, num::BigInt)::Tuple{Vector{Int8},Int64,Int64}
     local xmin = 0
     local xmax = 0
@@ -382,6 +392,13 @@ function decode(inst::Array{Int8,1},
     end
     local off = Int64(magni(inst[findall(x->x == 1, map(&, f[i,:,1], f[i,:,2]))]))
     return oplist[orop[ty] + off]
+end
+
+# Other functions
+
+function carryfrom(expmod, operands)::Int8
+    local carry = (radix^expmod) <= sum(map(x->x % radix^expmod, operands))
+    return Int8(carry)
 end
 
 end #module
