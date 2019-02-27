@@ -152,6 +152,7 @@ function SWAB()
     # signal11NZ r1
 end
 
+
 # -------------------------------
 # -- Arithmetical Instructions --
 # -------------------------------
@@ -333,6 +334,15 @@ function TST()
     # signal11NZ rl
     # Carry stin 0
 end
+
+function CMP()
+
+end
+
+function INC()
+
+end
+
 
 # --------------------------------
 # -- Floating-point Instruction --

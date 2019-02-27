@@ -8,7 +8,7 @@ include("./indicator11.jl")
 include("./inst_set11.jl")
 using .basics, .instruction11, .indicator11, .inst_set11
 
-export form, orop, oplist
+export form, orop
 
 
 #-----------------------------------------------------------------------------
