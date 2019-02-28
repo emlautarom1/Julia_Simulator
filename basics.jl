@@ -1,7 +1,7 @@
 module basics
 
 export +, radix, byte, radixcompi, radixcompr, digitcompi, digitcompr, magni, magnr, signmagni, signmagnr
-export biasi, biasr, hidebit, insertbit, truncate, round, trueround, normalize, flbsi, flbsr
+export biasi, biasr, hidebit, insertbit, truncate, round, trueround, normalize, flbsi, flbsr, wide
 export inPattern, decode
 
 import Base.+
@@ -394,7 +394,9 @@ function decode(inst::Array{Int8,1},
     return oplist[orop[ty] + off]
 end
 
-# Other functions
+#---------------------------------
+#--       Other functions       --
+#---------------------------------
 
 function carryfrom(expmod, operands)::Int8
     local carry = (radix^expmod) <= sum(map(x->x % radix^expmod, operands))

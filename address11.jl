@@ -1,4 +1,4 @@
-module addres11
+module address11
 
 export Size, Space, Value, regadr, flregard, memadr
 

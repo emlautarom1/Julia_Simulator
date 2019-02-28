@@ -6,7 +6,11 @@ include("./basics.jl")
 include("./instruction11.jl")
 include("./indicator11.jl")
 include("./inst_set11.jl")
-using .basics, .instruction11, .indicator11, .inst_set11
+include("./address11.jl")
+include("./format11.jl")
+include("./space11.jl")
+include("./configure11.jl")
+using .basics, .instruction11, .indicator11, .inst_set11, .address11, .format11, .space11, .configure11
 
 export form, orop
 
@@ -58,5 +62,78 @@ orop = [reduce(+, orop[1:i]) for i = 1:length(orop)]
 loper = pop!(orop)
 pushfirst!(orop, 0)
 orop = orop .+ 1
+
+#-----------------------------------------------------------------------------
+#--                             Addressing PDP-11                           --
+#-----------------------------------------------------------------------------
+
+function read11(address)
+    local size = address[Size]
+    local switch = address[Space]
+    if switch == 0
+        # Register
+
+        # local location = regmap11(address[Value])
+        # local data = (reg[location;])[1:min(-size, word)]
+    else
+        if switch == 1
+        # Floating Point Register
+
+            local data = flreg[(address[Value] % 6);1:size]
+            # Se toman size bits del registro de pf especificado en Value
+
+            # flinvop report11fl address[Value] ≥ 6
+        else
+            # Memory
+            
+            local location = address[Value] + adrperm11(size)
+           
+            # adrcheck11(location)
+            # Verificacion de ubicacion valida
+
+            local data =  memory[(location % memcap);]
+            # Se recuperan los bits de la memoria especificados en location, con modulo memcap.
+        end
+    end
+    return data
+end
+
+function write11(address, data)
+    local size = address[Size]
+    local switch = address[Space]
+    if switch == 0
+        # Write en registro
+
+        # local location = regmap11(address[Value])
+        reg[location;word[end - size:end]] = data
+
+        # Se escriben word bits en el registro indicado 
+        # En caso de que size sea menor que word, se escriben los ultimos size bits de data
+    else
+        if switch == 1
+            # Write en registro pf
+
+            # flinvop report11fl address[Value]≥6
+            # →OUT address[Value]≥6
+            flreg[address[Value];1:size] = data
+
+            # Se escriben los size bits en el registro indicado
+        else
+            # Write en memoria
+
+            local location = address[Value] + adrperm11(size)
+            # adrcheck(location)
+            # →OUT suppress11
+            memory[location;] = wide(byte, data)
+            # TODO(lautaroem1): Function supress11?
+        end
+    end
+end
+
+function adrperm11(size)
+    local loc = collect(1:div(size, byte))
+    # perm← (⍴loc)↑,⌽2 wide loc
+    throw("Not implemented")
+end
 
 end #module pdp11
