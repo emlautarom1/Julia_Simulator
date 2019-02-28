@@ -2,9 +2,7 @@ module name11
 
 export Psw, Slw, Piw, Intvec, Sp, Pc
 
-include("./format11.jl")
 include("./configure11.jl")
-include("./space11.jl")
 include("./name11io.jl")
 using .configure11
 
