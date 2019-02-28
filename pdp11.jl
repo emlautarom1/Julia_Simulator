@@ -87,24 +87,24 @@ function read11(address)
         # Register
 
         # local location = regmap11(address[Value])
-        # local data = (reg[location;])[1:min(-size, word)]
+        # local data = (reg[location,:])[1:min(-size, word)]
     else
         if switch == 1
         # Floating Point Register
 
-            # data = flreg[(address[Value] % 6);1:size]
+            data = flreg[(address[Value] % 6) , 1:size]
             # Se toman size bits del registro de pf especificado en Value
 
             # flinvop report11fl address[Value] ≥ 6
         else
             # Memory
             
-            # local location = address[Value] + adrperm11(size)
+            local location = address[Value] + adrperm11(size)
            
             # adrcheck11(location)
             # Verificacion de ubicacion valida
 
-            # data =  memory[(location % memcap);]
+            data =  memory[(location % memcap),:]
             # Se recuperan los bits de la memoria especificados en location, con modulo memcap.
         end
     end
@@ -126,24 +126,24 @@ function write11(address, data)
     elseif switch == 1
         # Write en registro pf
 
-        # flinvop report11fl address[Value]≥6
+        # flinvop report11fl address[Value] >= 6
         # →OUT address[Value]≥6
-        # flreg[address[Value];1:size] = data
+        flreg[address[Value], 1:size] = data
 
         # Se escriben los size bits en el registro indicado
     else
         # Write en memoria
 
-        # local location = address[Value] + adrperm11(size)
+        local location = address[Value] + adrperm11(size)
         # adrcheck(location)
         # →OUT suppress11
-        # memory[location;] = wide(byte, data)
+        memory[location,:] = wide(byte, data)
         # TODO(lautaroem1): Function supress11?
     end
 end
 
 function adrperm11(size)
-    # local loc = collect(1:div(size, byte))
+    local loc = collect(1:div(size, byte))
     # perm← (⍴loc)↑,⌽2 wide loc
 end
 
@@ -164,8 +164,8 @@ function adr11(size, field)
     elseif case == 1
         # Indirect register
 
-        # local rf = magni(read11(vcat(word, regadr, r)))
-        # address = vcat(size, memadr, rf)
+        local rf = magni(read11(vcat(word, regadr, r)))
+        address = vcat(size, memadr, rf)
     elseif case == 2
         # Postincrement
 
