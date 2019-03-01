@@ -1,4 +1,4 @@
-#------------------------------------------------------------------------------
+
 #--                               pdp-11.jl                                  --
 #------------------------------------------------------------------------------
 module pdp11
@@ -8,6 +8,8 @@ include("./indicator11.jl") # Calls indicator11io, no dependencies
 include("./inst_set11.jl") # No dependencies
 include("./address11.jl") # No dependencies
 include("./format11.jl") # No dependencies
+include("./status11.jl") # No dependencies
+include("./status11fl.jl") # No dependencies
 include("./configure11.jl") # Depends on format11
 include("./space11.jl") # Depends on format11, configure11
 include("./name11.jl") # Depends on configure11
@@ -19,6 +21,8 @@ using
 .inst_set11,
 .address11,
 .format11,
+.status11,
+.status11fl,
 .configure11,
 .space11,
 .name11
@@ -82,12 +86,12 @@ function read11(address)
     local size = address[Size]
     local switch = address[Space]
 
-    # local data
+    local data
     if switch == 0
         # Register
 
-        # local location = regmap11(address[Value])
-        # local data = (reg[location,:])[1:min(-size, word)]
+        local location = regmap11(address[Value])
+        local data = (reg[location,:])[1:min(-size, word)]
     else
         if switch == 1
         # Floating Point Register
@@ -108,7 +112,7 @@ function read11(address)
             # Se recuperan los bits de la memoria especificados en location, con modulo memcap.
         end
     end
-    # return data
+    return data
 end
 
 function write11(address, data)
@@ -118,11 +122,11 @@ function write11(address, data)
     if switch == 0
         # Write en registro
 
-        # local location = regmap11(address[Value])
-        # reg[location;word[end - size:end]] = data
-
         # Se escriben word bits en el registro indicado 
         # En caso de que size sea menor que word, se escriben los ultimos size bits de data
+
+        local location = regmap11(address[Value])
+        reg[location;word[end - size:end]] = data
     elseif switch == 1
         # Write en registro pf
 
@@ -144,7 +148,7 @@ end
 
 function adrperm11(size)
     local loc = collect(1:div(size, byte))
-    # perm← (⍴loc)↑,⌽2 wide loc
+    return reverse(wide(2, loc))[1:length(loc)]
 end
 
 #-----------------------------------------------------------------------------
@@ -156,44 +160,203 @@ function adr11(size, field)
     local step = r in [Sp, Pc] ? word : size
     local case = fld(field[M])
     
-    # local address
+    local address
     if case == 0
         # Register
 
-        # address = vcat(size, regadr, r)
+        address = [size regadr r]
     elseif case == 1
         # Indirect register
 
-        local rf = magni(read11(vcat(word, regadr, r)))
-        address = vcat(size, memadr, rf)
+        local rf = magni(read11([word regadr r]))
+        address = [size memadr rf]
     elseif case == 2
         # Postincrement
 
-        # address = size,1↓ step incr11 r
+        address = [size incr11(step, r)[2:end]]
     elseif case == 3
         # Indirect Postincrement
-
-        # rf← magni read11 word incr11 r
-        # address = vcat(size, memadr, rf)
+        
+        local rf = magni(read11(incr11(word, r))) 
+        address = [size memadr rf]
     elseif case == 4
         # Predecrement
-
-        # address = size,1↓ step decr11 r
+        
+        address = [size decr11(step, r)[2:end]]
     elseif case == 5
         # Indirect Predecrement
-        # rf = magni read11 word decr11 r
-        # address = vcat(size, memadr, rf)
+
+        local rf = magni(read11(decr11(word, r)))
+        address = [size memadr rf]
     elseif case == 6
         # Index + Displacement
         
-        # address= size disp11 r
+        address = disp11(size, r)
     else
         # Indirect Index + Displacement
         
-        # rf = magni read11 word disp11 r
-        # address = vcat(size, memadr, rf)
+        local rf = magni(read11(disp11(word, r)))
+        address = [size memadr rf]
     end
-    # return address
+    return address
+end
+
+function adr11fl(size, field)
+    local r = fld(field[R])
+    local step = r == Pc ? word : size
+    local switch = fld(field[R])
+
+    local address
+    if switch == 0
+        # Register
+
+        address = [size flregard r]
+    elseif switch == 1
+        # Indirect register
+        
+        local rf = read11([word regadr r])
+        address = [size memadr rf]
+    elseif switch == 2
+        # Postincrement
+
+        address = incr11(step, r)
+    elseif switch == 3
+        # Indirect postincrement
+
+        local rf = magni(read11(incr11(word, r)))
+        address = [size memadr rf]
+    elseif switch == 4
+        # Predecrement
+
+        address = decr11(step, r)
+    elseif switch == 5
+        # Indirect predecrement
+
+        local rf = magni(read11(decr11(word, r)))
+        address = [size memadr rf]
+    elseif switch == 6
+        # Index + displacement
+
+        address = disp11(size, r)
+    else
+        # Indirect index + displacement
+
+        local rf = magni(read11(disp11(word, r)))
+        address = [size memadr rf]
+    end
+    return address
+end
+
+function disp11(size, r)
+    throw("Not implemented!")
+
+    # local displacement = magni(ifetch11())
+    # local index = magni(regout(r))
+    # return [size memadr (index + displacement % adrcap)]
+end
+
+function incr11(size, r)
+    # DEC PDP11 postincrement
+    
+    local address = [size memadr magni(regout(r))]
+    local count = address[Value] + (size / byte)
+    regin(r, magnr(word, count))
+    return address
+end
+
+function decr11(size, r)
+
+    local count = magni(regout(r)) - (size / byte)
+    # report(Warning, (r==Sp && count == limit11))
+    # report(Spec, (r==Sp && count == limit11 - 16))
+    local address = [size memadr (count % adrcap)]
+    regin(r, magnr(word, address[Value]))
+    return address
+end
+
+function limit11()
+    # DEC PDP11 stack limit
+    if Kernel == magni(stout(Currentmode))
+        magni(read11([word memadr Slw]))
+    else
+        256
+    end
+end
+
+function regin(adr, data)
+    # DEC PDP11 register input
+
+    reg[regmap11(adr),:] = data
+end
+
+function regout(adr)
+    reg[regmap11(adr),:]
+end
+    
+function od11(adr)
+    local odd = !isodd(adr) ? adr + 1 : adr
+end
+
+function regmap11(adr)
+    # DEC PDP11 register addresses
+
+    local switch = Nothing
+    if switch == 0
+        # Register set
+
+        return stout(Regset)
+    elseif switch == 1
+        # Stack pointer
+
+        return Sp + (0,8,9)[magni(stout(Currentmode))]
+    else
+        # Instruction address
+
+        return Pc
+    end
+end
+
+
+#--------------------------------------
+#--          Status Format           --
+#--------------------------------------
+
+function stout(id)
+    local psw = read11([word memadr Psw])
+    return psw[id]
+end
+
+function stin(id, status)
+    local psw = read11([word memadr Psw])
+    psw[id] = status
+    write11([word memadr Psw], psw)
+end
+
+#--------------------------------------
+#--        Size specification        --
+#--------------------------------------
+
+function size11()
+    return (word, byte)[fld(Byte)]
+end
+
+function size11fl()
+    return (long, double)[flstatus[Fd]]
+end
+
+#--------------------------------------
+#--          Index arithmetic        --
+#--------------------------------------
+
+function pop11()
+    return read11(incr11(word, Sp))
+end
+
+function push(data)
+    # DEC PDP11 write onto stack
+    throw("Not implemented!")
+
+    # (word decr11 Sp) write data
 end
 
 end #module pdp11
