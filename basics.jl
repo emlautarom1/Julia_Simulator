@@ -403,4 +403,12 @@ function carryfrom(expmod, operands)::Int8
     return Int8(carry)
 end
 
+function fld(inst, field)
+    return magni(inst[field])
+end
+
+function fld0(inst, field)
+    return magn0i(inst[field])
+end
+
 end #module
