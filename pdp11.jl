@@ -308,7 +308,7 @@ function regmap11(adr)
     elseif switch == 1
         # Stack pointer
 
-        return Sp + (0,8,9)[magni(stout(Currentmode))]
+        return Sp + (0, 8, 9)[magni(stout(Currentmode))]
     else
         # Instruction address
 
@@ -357,6 +357,23 @@ function push(data)
     throw("Not implemented!")
 
     # (word decr11 Sp) write data
+end
+
+#--------------------------------------
+#--     Integer Domain Signaling     --
+#--------------------------------------
+
+function signal11NZ(res)
+    stin(Neg, res[1])
+    stin(Zero, all(x->x == 0, res))
+    stin(Oflo, 0)
+end
+
+
+function signalNZO(res)
+    stin(Neg, res[1])
+    stin(Zero, all(x->x == 0, res))
+    # stin(Oflo, xmax | xmin)
 end
 
 end #module pdp11
