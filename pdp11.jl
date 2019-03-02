@@ -384,7 +384,7 @@ function singal11FNZ(r1)
     # DEC PDP11 float numeric result
 
     # flstatus[Neg] = r1[Coef[1]]
-    flstatus[Zero] = all(x-> x == 0, r1)
+    flstatus[Zero] = all(x->x == 0, r1)
     flstatus[Oflo] = 0
     flstatus[Carry] = 0
 end
@@ -396,6 +396,50 @@ function signal11FNZO(res)
     flstatus[Zero] = res == 0
     # flstatus[Oflo] = xmax
     flstatus[Carry] = 0
+end
+
+#--------------------------------------
+#--      Instruction Sequencing      --
+#--------------------------------------
+
+function cycle11()
+    # Basic cycle of DEC PDP11
+    
+    while(!stop)
+        # interrupt11()
+        # execute(ifetch11())
+    end
+end
+
+function ifetch11()
+    return read11(incr11(word, Pc))
+end
+
+#---------------------------
+#--      Supervision      --
+#---------------------------
+
+function adrcheck11(location)
+    # DEC PDP11 address check
+    
+    throw("Not implemented!")
+    # report(Spec, location >= memcap)
+    # Spec report 0≠(2⌊⍴,location)|⌊/location
+end
+
+function suppress11()
+    return reduce(|, ind[Spec, Invop])
+end
+
+#-------------------------------------
+#--      Floating point reports     --
+#-------------------------------------
+
+function report11fl(code, condition)
+    if(condition)
+        fle = magnr(length(fle), code)
+        # report(Fle, 1)
+    end
 end
 
 end #module pdp11
