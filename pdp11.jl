@@ -376,4 +376,26 @@ function signalNZO(res)
     # stin(Oflo, xmax | xmin)
 end
 
+#---------------------------------------
+#--  Floating Point Domain Signaling  --
+#---------------------------------------
+
+function singal11FNZ(r1)
+    # DEC PDP11 float numeric result
+
+    # flstatus[Neg] = r1[Coef[1]]
+    flstatus[Zero] = all(x-> x == 0, r1)
+    flstatus[Oflo] = 0
+    flstatus[Carry] = 0
+end
+
+function signal11FNZO(res)
+    # DEC PDP11 float arithmetic result
+
+    flstatus[Neg] = res < 0
+    flstatus[Zero] = res == 0
+    # flstatus[Oflo] = xmax
+    flstatus[Carry] = 0
+end
+
 end #module pdp11
