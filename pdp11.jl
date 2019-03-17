@@ -442,4 +442,17 @@ function report11fl(code, condition)
     end
 end
 
+#----------------------
+#--   Interruption   --
+#----------------------
+
+function progint11()
+    local who = 7 - findfirst(x->x == 1, read11([byte memadr Piw])[1:7])
+    if who > magni(stout(Priority))
+        local nr = magnr(byte, who * 34)
+        write11([byte memadr Piw+1], nr)
+        # report(Pir, 1)
+    end
+end
+
 end #module pdp11
