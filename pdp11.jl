@@ -99,13 +99,13 @@ function read11(address)
             data = flreg[(address[Value] % 6) , 1:size]
             # Se toman size bits del registro de pf especificado en Value
 
-            # flinvop report11fl address[Value] ≥ 6
+            report11fl(flinvop, address[Value] >= 6)
         else
             # Memory
             
             local location = address[Value] + adrperm11(size)
            
-            # adrcheck11(location)
+            adrcheck11(location)
             # Verificacion de ubicacion valida
 
             data =  memory[(location % memcap),:]
@@ -130,19 +130,20 @@ function write11(address, data)
     elseif switch == 1
         # Write en registro pf
 
-        # flinvop report11fl address[Value] >= 6
-        # →OUT address[Value]≥6
-        flreg[address[Value], 1:size] = data
+        report11fl(flinvop, address[Value] >= 6)
 
+        # address[Value] >= 6
+        # →OUT address[Value]≥6
+
+        flreg[address[Value], 1:size] = data
         # Se escriben los size bits en el registro indicado
     else
         # Write en memoria
 
         local location = address[Value] + adrperm11(size)
-        # adrcheck(location)
-        # →OUT suppress11
+        adrcheck11(location)
+        suppress11()
         memory[location,:] = wide(byte, data)
-        # TODO(lautaroem1): Function supress11?
     end
 end
 
@@ -248,11 +249,9 @@ function adr11fl(size, field)
 end
 
 function disp11(size, r)
-    throw("Not implemented!")
-
-    # local displacement = magni(ifetch11())
-    # local index = magni(regout(r))
-    # return [size memadr (index + displacement % adrcap)]
+    local displacement = magni(ifetch11())
+    local index = magni(regout(r))
+    return [size memadr (index + displacement % adrcap)]
 end
 
 function incr11(size, r)
@@ -277,24 +276,24 @@ end
 function limit11()
     # DEC PDP11 stack limit
     if Kernel == magni(stout(Currentmode))
-        magni(read11([word memadr Slw]))
+        return magni(read11([word memadr Slw]))
     else
-        256
+        return 256
     end
 end
 
 function regin(adr, data)
     # DEC PDP11 register input
 
-    reg[regmap11(adr),:] = data
+    return reg[regmap11(adr),:] = data
 end
 
 function regout(adr)
-    reg[regmap11(adr),:]
+    return reg[regmap11(adr),:]
 end
     
 function od11(adr)
-    local odd = !isodd(adr) ? adr + 1 : adr
+    return !isodd(adr) ? adr + 1 : adr
 end
 
 function regmap11(adr)
@@ -406,7 +405,7 @@ function cycle11()
     # Basic cycle of DEC PDP11
     
     while(!stop)
-        # interrupt11()
+        interrupt11()
         # execute(ifetch11())
     end
 end
