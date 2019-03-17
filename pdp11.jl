@@ -446,11 +446,34 @@ end
 #--   Interruption   --
 #----------------------
 
+function interrupt11()
+    local who
+    local old
+    local new
+
+    progint11()
+    who = findfirst(x->x == 1, ind)
+
+    if who != length(ind)
+        ind[who] = 0
+        old = stout(collect(1:word))
+        # push11(old)
+        # push11(reg[Pc,:])
+        reg[Pc,:] = read11([word memadr Intvec[who]])
+        # report(Spec, (magni(reg[Pc,;]) % 2) == 1)
+        new = read11([word memadr 2 + Intvec[who]])
+        new[Previousmode] = old[Currentmode]
+        # stin(iword, new)
+    end
+    # report(Bpt, stout(Trace))
+    throw("Not implemented loop with `wait`")
+end
+
 function progint11()
     local who = 7 - findfirst(x->x == 1, read11([byte memadr Piw])[1:7])
     if who > magni(stout(Priority))
         local nr = magnr(byte, who * 34)
-        write11([byte memadr Piw+1], nr)
+        write11([byte memadr Piw + 1], nr)
         # report(Pir, 1)
     end
 end
