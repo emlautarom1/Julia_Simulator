@@ -29,55 +29,6 @@ using
 
 export form, orop
 
-
-#-----------------------------------------------------------------------------
-#--                             Sintax PDP-11                               --
-#-----------------------------------------------------------------------------
-
-const dict = Dict{String,Tuple{String,UnitRange{Int64}}}("Byte" => ("10", 0:0),                                   
-     "Source" => ("10", 4:9),                                 
-     "OpCode" => ("11", 1:3),                                 
-     "Dest" => ("10", 10:15),
-     "RSource" => ("10", 7:9),
-     "RDest" => ("10", 13:15),
-     "Opb" => ("11", 4:6),
-     "Opf" => ("11", 4:7),
-     "Offset" => ("10", 8:15),
-     "Ops" => ("11", 8:9),
-     "Cadr" => ("10", 12:15),
-     "Ope" => ("11", 13:15),
-     "Rfl" => ("10", 8:9))                                    
-
-form = reshape(zeros(Int8, 0), 0, 0, 2)    #init form
-form = inPattern(form, "Byte OpCode Source Dest", dict)  
-form = inPattern(form, "0 1 1 0 Source Dest", dict) 
-form = inPattern(form, "1 1 1 0 Source Dest", dict) 
-form = inPattern(form, "0 1 1 1 Opb RSource Dest", dict)  
-form = inPattern(form, "0 0 0 0 Opf Offset", dict)  
-form = inPattern(form, "1 0 0 0 Opf Offset", dict)  
-form = inPattern(form, "1 1 1 1 Opf Rfl Dest", dict)  
-form = inPattern(form, "0 0 0 0 1 0 0 RSource Dest", dict)  
-form = inPattern(form, "Byte 0 0 0 1 0 1 0 Ops Dest", dict)  
-form = inPattern(form, "Byte 0 0 0 1 0 1 1 Ops Dest", dict)  
-form = inPattern(form, "Byte 0 0 0 1 1 0 0 Ops Dest", dict)
-form = inPattern(form, "0 0 0 0 0 0 0 0 Ops Dest", dict)  
-form = inPattern(form, "0 0 0 0 1 1 0 1 Ops Dest", dict)  
-form = inPattern(form, "1 1 1 1 0 0 0 0 Ops Dest", dict)  
-form = inPattern(form, "1 1 1 1 0 0 0 1 Ops Dest", dict)  
-form = inPattern(form, "0 0 0 0 0 0 0 0 1 0 0 0 0 RDest", dict)
-form = inPattern(form, "0 0 0 0 0 0 0 0 1 0 0 1 1 RDest", dict)
-form = inPattern(form, "0 0 0 0 0 0 0 0 1 0 1 0 Cadr", dict)
-form = inPattern(form, "0 0 0 0 0 0 0 0 1 0 1 1 Cadr", dict)
-form = inPattern(form, "0 0 0 0 0 0 0 0 0 0 0 0 0 Ope", dict) 
-form = inPattern(form, "1 1 1 1 0 0 0 0 0 0 0 0 0 Ope", dict)
-form = inPattern(form, "1 1 1 1 0 0 0 0 0 0 0 0 1 Ope", dict)
-
-orop = (2).^reduce(+, reduce(&, form, dims = 3), dims = 2)
-orop = [reduce(+, orop[1:i]) for i = 1:length(orop)]
-loper = pop!(orop)
-pushfirst!(orop, 0)
-orop = orop .+ 1
-
 #-----------------------------------------------------------------------------
 #--                             Addressing PDP-11                           --
 #-----------------------------------------------------------------------------
@@ -126,7 +77,7 @@ function write11(address, data)
         # En caso de que size sea menor que word, se escriben los ultimos size bits de data
 
         local location = regmap11(address[Value])
-        reg[location;word[end - size:end]] = data
+        reg[location, word[end - size:end]] = data
     elseif switch == 1
         # Write en registro pf
 
@@ -351,7 +302,7 @@ function pop11()
     return read11(incr11(word, Sp))
 end
 
-function push(data)
+function push11(data)
     # DEC PDP11 write onto stack
     throw("Not implemented!")
 
@@ -476,5 +427,80 @@ function progint11()
         # report(Pir, 1)
     end
 end
+
+#------------------------------
+#--      Other Functions     --
+#------------------------------
+
+function execute(inst)
+    # ⍎ ⍕oplist[decode inst;]
+    throw("Not implemented!")
+    # oplist[decode(inst, form, oplist, orop),:]
+end
+
+function report(which, cond)
+    ind[which] = reduce(|, [ind[which] cond])
+end
+
+#------------------------------------
+#--      invalid Instructions      --
+#------------------------------------
+
+function i()
+    report(Invop, 1)
+    println("Invalid instruction!")
+end
+
+#-----------------------------------------------------------------------------
+#--                             Sintax PDP-11                               --
+#-----------------------------------------------------------------------------
+
+ind[Spec] = ind[Invop] = 0
+
+oplist = [i, MOV, CMP, BIT, BIC, BIS, i, i, ADD, SUB, MUL, DIV, ASH, ASHC, XOR, i, i, SOB, i, BR, BNE, BEQ, BGE, BLT, BGT, BLE, i, i, i, i, i, i, i, i, BPL, BMI, BHI, BLOS, BVC, BVS, BCC, BCS, EMT, TRAP, i, i, i, i, i, i, i, i, MULF, MODF, ADDF, LDF, SUBF, CMPF, STF, DIVF, STEX, STCI, STCF, LDEX, LDCI, LDCF, JSR, CLR, COM, INC, DEC, NEG, ADC, SBC, TST, ROR, ROL, ASR, ASL, i, JMP, i, SWAB, MARK, i, i, SXT, i, LDFS, STFS, STST, CLRF, TSTF, ABSF, NEGF, RTS, SPL, CLCC, SECC, HALT, WAIT, RTI, BPT, IOT, RSET, RTT, i, CFCC, SETF, SETI, i, i, i, i, i, i, SETD, SETL, i, i, i, i, i]
+
+const dict = Dict{String,Tuple{String,UnitRange{Int64}}}("Byte" => ("10", 0:0),                                   
+     "Source" => ("10", 4:9),                                 
+     "OpCode" => ("11", 1:3),                                 
+     "Dest" => ("10", 10:15),
+     "RSource" => ("10", 7:9),
+     "RDest" => ("10", 13:15),
+     "Opb" => ("11", 4:6),
+     "Opf" => ("11", 4:7),
+     "Offset" => ("10", 8:15),
+     "Ops" => ("11", 8:9),
+     "Cadr" => ("10", 12:15),
+     "Ope" => ("11", 13:15),
+     "Rfl" => ("10", 8:9))                                    
+
+form = reshape(zeros(Int8, 0), 0, 0, 2)    #init form
+form = inPattern(form, "Byte OpCode Source Dest", dict)  
+form = inPattern(form, "0 1 1 0 Source Dest", dict) 
+form = inPattern(form, "1 1 1 0 Source Dest", dict) 
+form = inPattern(form, "0 1 1 1 Opb RSource Dest", dict)  
+form = inPattern(form, "0 0 0 0 Opf Offset", dict)  
+form = inPattern(form, "1 0 0 0 Opf Offset", dict)  
+form = inPattern(form, "1 1 1 1 Opf Rfl Dest", dict)  
+form = inPattern(form, "0 0 0 0 1 0 0 RSource Dest", dict)  
+form = inPattern(form, "Byte 0 0 0 1 0 1 0 Ops Dest", dict)  
+form = inPattern(form, "Byte 0 0 0 1 0 1 1 Ops Dest", dict)  
+form = inPattern(form, "Byte 0 0 0 1 1 0 0 Ops Dest", dict)
+form = inPattern(form, "0 0 0 0 0 0 0 0 Ops Dest", dict)  
+form = inPattern(form, "0 0 0 0 1 1 0 1 Ops Dest", dict)  
+form = inPattern(form, "1 1 1 1 0 0 0 0 Ops Dest", dict)  
+form = inPattern(form, "1 1 1 1 0 0 0 1 Ops Dest", dict)  
+form = inPattern(form, "0 0 0 0 0 0 0 0 1 0 0 0 0 RDest", dict)
+form = inPattern(form, "0 0 0 0 0 0 0 0 1 0 0 1 1 RDest", dict)
+form = inPattern(form, "0 0 0 0 0 0 0 0 1 0 1 0 Cadr", dict)
+form = inPattern(form, "0 0 0 0 0 0 0 0 1 0 1 1 Cadr", dict)
+form = inPattern(form, "0 0 0 0 0 0 0 0 0 0 0 0 0 Ope", dict) 
+form = inPattern(form, "1 1 1 1 0 0 0 0 0 0 0 0 0 Ope", dict)
+form = inPattern(form, "1 1 1 1 0 0 0 0 0 0 0 0 1 Ope", dict)
+
+orop = (2).^reduce(+, reduce(&, form, dims = 3), dims = 2)
+orop = [reduce(+, orop[1:i]) for i = 1:length(orop)]
+loper = pop!(orop)
+pushfirst!(orop, 0)
+orop = orop .+ 1
 
 end #module pdp11

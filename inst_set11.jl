@@ -1,13 +1,6 @@
 module inst_set11
 
-export oplist
-
-#------------------------------------
-#--      invalid Instructions      --
-#------------------------------------
-function i()
-    println("Invalid instruction!")
-end
+export  MOV, CMP, BIT, BIC, BIS, ADD, SUB, MUL, DIV, ASH, ASHC, XOR, SOB, BR, BNE, BEQ, BGE, BLT, BGT, BLE, BPL, BMI, BHI, BLOS, BVC, BVS, BCC, BCS, EMT, TRAP, MULF, MODF, ADDF, LDF, SUBF, CMPF, STF, DIVF, STEX, STCI, STCF, LDEX, LDCI, LDCF, JSR, CLR, COM, INC, DEC, NEG, ADC, SBC, TST, ROR, ROL, ASR, ASL, JMP, SWAB, MARK, SXT, LDFS, STFS, STST, CLRF, TSTF, ABSF, NEGF, RTS, SPL, CLCC, SECC, HALT, WAIT, RTI, BPT, IOT, RSET, RTT,  CFCC, SETF, SETI, SETD, SETL
 
 # ------------------------------------
 # -- Data Manipulation Instructions --
@@ -601,8 +594,5 @@ end
 function SETL()
 
 end
-
-
-oplist = [i, MOV, CMP, BIT, BIC, BIS, i, i, ADD, SUB, MUL, DIV, ASH, ASHC, XOR, i, i, SOB, i, BR, BNE, BEQ, BGE, BLT, BGT, BLE, i, i, i, i, i, i, i, i, BPL, BMI, BHI, BLOS, BVC, BVS, BCC, BCS, EMT, TRAP, i, i, i, i, i, i, i, i, MULF, MODF, ADDF, LDF, SUBF, CMPF, STF, DIVF, STEX, STCI, STCF, LDEX, LDCI, LDCF, JSR, CLR, COM, INC, DEC, NEG, ADC, SBC, TST, ROR, ROL, ASR, ASL, i, JMP, i, SWAB, MARK, i, i, SXT, i, LDFS, STFS, STST, CLRF, TSTF, ABSF, NEGF, RTS, SPL, CLCC, SECC, HALT, WAIT, RTI, BPT, IOT, RSET, RTT, i, CFCC, SETF, SETI, i, i, i, i, i, i, SETD, SETL, i, i, i, i, i]
 
 end
