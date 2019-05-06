@@ -29,6 +29,9 @@ using
 
 export form, orop
 
+
+
+
 #-----------------------------------------------------------------------------
 #--                             Addressing PDP-11                           --
 #-----------------------------------------------------------------------------
@@ -459,6 +462,9 @@ ind[Spec] = ind[Invop] = 0
 
 oplist = [i, MOV, CMP, BIT, BIC, BIS, i, i, ADD, SUB, MUL, DIV, ASH, ASHC, XOR, i, i, SOB, i, BR, BNE, BEQ, BGE, BLT, BGT, BLE, i, i, i, i, i, i, i, i, BPL, BMI, BHI, BLOS, BVC, BVS, BCC, BCS, EMT, TRAP, i, i, i, i, i, i, i, i, MULF, MODF, ADDF, LDF, SUBF, CMPF, STF, DIVF, STEX, STCI, STCF, LDEX, LDCI, LDCF, JSR, CLR, COM, INC, DEC, NEG, ADC, SBC, TST, ROR, ROL, ASR, ASL, i, JMP, i, SWAB, MARK, i, i, SXT, i, LDFS, STFS, STST, CLRF, TSTF, ABSF, NEGF, RTS, SPL, CLCC, SECC, HALT, WAIT, RTI, BPT, IOT, RSET, RTT, i, CFCC, SETF, SETI, i, i, i, i, i, i, SETD, SETL, i, i, i, i, i]
 
+
+
+
 const dict = Dict{String,Tuple{String,UnitRange{Int64}}}("Byte" => ("10", 0:0),                                   
      "Source" => ("10", 4:9),                                 
      "OpCode" => ("11", 1:3),                                 
@@ -497,7 +503,8 @@ form = inPattern(form, "0 0 0 0 0 0 0 0 0 0 0 0 0 Ope", dict)
 form = inPattern(form, "1 1 1 1 0 0 0 0 0 0 0 0 0 Ope", dict)
 form = inPattern(form, "1 1 1 1 0 0 0 0 0 0 0 0 1 Ope", dict)
 
-orop = (2).^reduce(+, reduce(&, form, dims = 3), dims = 2)
+
+orop =2 .^ reduce(+, reduce(&, form, dims = 3), dims = 2)
 orop = [reduce(+, orop[1:i]) for i = 1:length(orop)]
 loper = pop!(orop)
 pushfirst!(orop, 0)

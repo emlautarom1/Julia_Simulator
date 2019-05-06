@@ -29,7 +29,7 @@ function radixcompi(rep::Vector{Int8})::BigInt
     if (isempty(rep))
         return 0
     else
-        local t::BigInt = 0
+        local t::BigInt = rep[1]
         local modulus::BigInt = (BigInt(radix))^length(rep)
         for i in 2:(axes(rep, 1)[end])
             t = t * radix + rep[i]
@@ -73,7 +73,7 @@ function digitcompi(rep::Array{Int8})::BigInt
     if (isempty(rep))
         return 0
     else
-        local t::BigInt = 0
+        local t::BigInt = rep[1]
         local modulus::BigInt = BigInt(radix)^length(rep) - 1
         for i in 2:axes(rep, 1)[end]
             t = t * radix + rep[i]
@@ -119,7 +119,7 @@ function magni(rep::Vector{Int8})::BigInt
     if (isempty(rep))
         return 0
     else
-        local t::BigInt = 0
+        local t::BigInt = rep[1]
         for i in 2:axes(rep, 1)[end]
             t = (t * radix) + rep[i]
         end
@@ -131,9 +131,9 @@ function magn0i(rep::Vector{Int8})::BigInt
     if (isempty(rep))
         return 0
     else
-        local modulus = radix^(rep[end])
+        local modulus = radix^(length(rep))
         local value = magni(rep)
-        return value + modulus^(value == 0)
+        return value + modulus*(value == 0)
     end
 end
 
@@ -169,7 +169,7 @@ function signmagni(rep::Vector{Int8})::BigInt
     if (isempty(rep))
         return 0
     else
-        local t::BigInt = 0
+        local t::BigInt = rep[1]
         local modulus::BigInt = radix^(length(rep) - 1)
         for i in 2:axes(rep, 1)[end]
             t = (t * radix) + rep[i]
