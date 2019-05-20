@@ -69,6 +69,8 @@ end
 #--                 digit complement                    --
 #---------------------------------------------------------
 
+# One's Complement
+
 function digitcompi(rep::Array{Int8})::BigInt
     if (isempty(rep))
         return 0
@@ -241,7 +243,7 @@ function biasr(size::Int64, num::BigInt)::Tuple{Vector{Int8},Int64,Int64}
 end
 
 function biasr(size::Int64, num::Int64)::Tuple{Vector{Int8},Int64,Int64}
-    local t::BigInt = BigInt(radix)
+    local t::BigInt = BigInt(num)
     biasr(size, t)
 end
 

@@ -53,6 +53,9 @@ end
 function testingBasicFunctions()
     local testing
 
+
+    # Testing radixcompi and radixcompr
+
     testing = pdp11.basics.radixcompi(vec(Int8[1 0 0 0]))
     println(testing == BigInt(-8))
     
@@ -65,6 +68,7 @@ function testingBasicFunctions()
     testing = pdp11.basics.radixcompr(3, -8)
     println( testing[2]===1 && testing[3]===0)
 
+    # Testing DigitCompr and DigitCompi
 
     testing = pdp11.basics.digitcompi(vec(Int8[1 0 0 0]))
     println(testing== -7 && typeof(testing)==BigInt)
@@ -97,5 +101,46 @@ function testingBasicFunctions()
     testing = pdp11.basics.digitcompr( 3 , -7)
     println(testing[2]==1 && testing[3]==0 )
     
+
+    # Testing biasi and biasr
+
+    testing = pdp11.basics.biasi(vec(Int8[0 0 0 0]))    
+    println( testing == -8)
+
+    testing = pdp11.basics.biasi(vec(Int8[0 0 0 0 0 0 0 0]))    
+    println( testing == -128)
+
+    testing = pdp11.basics.biasi(vec(Int8[1 0 0 0]))    
+    println( testing == 0)
+
+    testing = pdp11.basics.biasi(vec(Int8[1 1 1 0]))    
+    println( testing == 6)
+
+
+    testing = pdp11.basics.biasr( 4 , BigInt(7))
+    println(testing[1]== vec(Int8[1 1 1 1]) && testing[2]==0 && testing[3]==0 )
+
+    testing = pdp11.basics.biasr( 3 , BigInt(0))
+    println(testing[1]== vec(Int8[1 0 0]) && testing[2]==0 && testing[3]==0 )
+
+    testing = pdp11.basics.biasr( 4 , BigInt(-8))
+    println(testing[1]== vec(Int8[0 0 0 0]) && testing[2]==0 && testing[3]==0 )
+
+    testing = pdp11.basics.biasr( 3 , BigInt(-7))
+    println(testing[1]== vec(Int8[1 0 1]) && testing[2]==1 && testing[3]==0 )
+
+    testing = pdp11.basics.biasr( 4 , 7)
+    println(testing[1]== vec(Int8[1 1 1 1]) && testing[2]==0 && testing[3]==0 )
+
+    testing = pdp11.basics.biasr( 4 , -8)
+    println(testing[1]== vec(Int8[0 0 0 0]) && testing[2]==0 && testing[3]==0 )
+
+    testing = pdp11.basics.biasr( 4 , -7)
+    println(testing[1]== vec(Int8[0 0 0 1]) && testing[2]==0 && testing[3]==0 )
+
+
+
+
+
 
 end
