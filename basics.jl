@@ -107,7 +107,7 @@ function digitcompr(size::Int64, num::BigInt)::Tuple{Vector{Int8},Int64,Int64}
 end
 
 function digitcompr(size::Int64, num::Int64)::Tuple{Vector{Int8},Int64,Int64}
-    local t::BigInt = BigInt(radix)
+    local t::BigInt = BigInt(num)
     return digitcompr(size, t)
 end
 

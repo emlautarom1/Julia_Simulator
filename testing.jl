@@ -63,5 +63,39 @@ function testingBasicFunctions()
     println(testing[2] === 0 && testing[3] === 0)
 
     testing = pdp11.basics.radixcompr(3, -8)
-    println(testing[2] === 1 && testing[3] === 0)
+    println( testing[2]===1 && testing[3]===0)
+
+
+    testing = pdp11.basics.digitcompi(vec(Int8[1 0 0 0]))
+    println(testing== -7 && typeof(testing)==BigInt)
+
+    testing = pdp11.basics.digitcompi(vec(Int8[0 1 1 1]))
+    println(testing== 7 && typeof(testing)==BigInt)
+
+    testing = pdp11.basics.digitcompi(vec(Int8[0 0 0 0]))
+    println(testing== 0 && typeof(testing)==BigInt)
+
+    testing = pdp11.basics.digitcompi(vec(Int8[1 1 1 1]))
+    println(testing== 0 && typeof(testing)==BigInt)
+    
+    testing = pdp11.basics.digitcompr( 4 , BigInt(8))
+    println(testing[2]==0 && testing[3]==1 )
+
+    testing = pdp11.basics.digitcompr( 4 , BigInt(7))
+    println(testing[2]==0 && testing[3]==0 )
+
+    testing = pdp11.basics.digitcompr( 3 , BigInt(-7))
+    println(testing[2]==1 && testing[3]==0 )
+
+
+    testing = pdp11.basics.digitcompr( 4 , 8)
+    println(testing[2]==0 && testing[3]==1 )
+
+    testing = pdp11.basics.digitcompr( 4 , 7)
+    println(testing[2]==0 && testing[3]==0 )
+
+    testing = pdp11.basics.digitcompr( 3 , -7)
+    println(testing[2]==1 && testing[3]==0 )
+    
+
 end
