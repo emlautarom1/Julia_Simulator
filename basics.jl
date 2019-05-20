@@ -157,8 +157,7 @@ function magnr(size::Int64, num::BigInt)::Tuple{Vector{Int8},Int64,Int64}
 end
 
 function magnr(size::Int64, num::Int64)::Tuple{Vector{Int8},Int64,Int64}
-    local t::BigInt = BigInt(radix)
-    return magnr(size, t)
+    return magnr(size, BigInt(num))
 end
 
 #-----------------------------------------------------------------
