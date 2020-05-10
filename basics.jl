@@ -29,7 +29,7 @@ function radixcompi(rep::Vector{Int8})::BigInt
     if (isempty(rep))
         return 0
     else
-        local t::BigInt = 0
+        local t::BigInt = rep[1]
         local modulus::BigInt = (BigInt(radix))^length(rep)
         for i in 2:(axes(rep, 1)[end])
             t = t * radix + rep[i]
@@ -69,11 +69,13 @@ end
 #--                 digit complement                    --
 #---------------------------------------------------------
 
+# One's Complement
+
 function digitcompi(rep::Array{Int8})::BigInt
     if (isempty(rep))
         return 0
     else
-        local t::BigInt = 0
+        local t::BigInt = rep[1]
         local modulus::BigInt = BigInt(radix)^length(rep) - 1
         for i in 2:axes(rep, 1)[end]
             t = t * radix + rep[i]
@@ -107,7 +109,7 @@ function digitcompr(size::Int64, num::BigInt)::Tuple{Vector{Int8},Int64,Int64}
 end
 
 function digitcompr(size::Int64, num::Int64)::Tuple{Vector{Int8},Int64,Int64}
-    local t::BigInt = BigInt(radix)
+    local t::BigInt = BigInt(num)
     return digitcompr(size, t)
 end
 
@@ -119,7 +121,7 @@ function magni(rep::Vector{Int8})::BigInt
     if (isempty(rep))
         return 0
     else
-        local t::BigInt = 0
+        local t::BigInt = rep[1]
         for i in 2:axes(rep, 1)[end]
             t = (t * radix) + rep[i]
         end
@@ -131,9 +133,9 @@ function magn0i(rep::Vector{Int8})::BigInt
     if (isempty(rep))
         return 0
     else
-        local modulus = radix^(rep[end])
+        local modulus = radix^(length(rep))
         local value = magni(rep)
-        return value + modulus^(value == 0)
+        return value + modulus*(value == 0)
     end
 end
 
@@ -157,8 +159,7 @@ function magnr(size::Int64, num::BigInt)::Tuple{Vector{Int8},Int64,Int64}
 end
 
 function magnr(size::Int64, num::Int64)::Tuple{Vector{Int8},Int64,Int64}
-    local t::BigInt = BigInt(radix)
-    return magnr(size, t)
+    return magnr(size, BigInt(num))
 end
 
 #-----------------------------------------------------------------
@@ -169,7 +170,7 @@ function signmagni(rep::Vector{Int8})::BigInt
     if (isempty(rep))
         return 0
     else
-        local t::BigInt = 0
+        local t::BigInt = rep[1]
         local modulus::BigInt = radix^(length(rep) - 1)
         for i in 2:axes(rep, 1)[end]
             t = (t * radix) + rep[i]
@@ -242,7 +243,7 @@ function biasr(size::Int64, num::BigInt)::Tuple{Vector{Int8},Int64,Int64}
 end
 
 function biasr(size::Int64, num::Int64)::Tuple{Vector{Int8},Int64,Int64}
-    local t::BigInt = BigInt(radix)
+    local t::BigInt = BigInt(num)
     biasr(size, t)
 end
 
