@@ -56,9 +56,9 @@ function read11(address)
             report11fl(flinvop, address[Value] >= 6)
         else
             # Memory
-            
+
             local location = address[Value] + adrperm11(size)
-           
+
             adrcheck11(location)
             # Verificacion de ubicacion valida
 
@@ -76,7 +76,7 @@ function write11(address, data)
     if switch == 0
         # Write en registro
 
-        # Se escriben word bits en el registro indicado 
+        # Se escriben word bits en el registro indicado
         # En caso de que size sea menor que word, se escriben los ultimos size bits de data
 
         local location = regmap11(address[Value])
@@ -114,7 +114,7 @@ function adr11(size, field)
     local r = fld(field[R])
     local step = r in [Sp, Pc] ? word : size
     local case = fld(field[M])
-    
+
     local address
     if case == 0
         # Register
@@ -131,12 +131,12 @@ function adr11(size, field)
         address = [size incr11(step, r)[2:end]]
     elseif case == 3
         # Indirect Postincrement
-        
-        local rf = magni(read11(incr11(word, r))) 
+
+        local rf = magni(read11(incr11(word, r)))
         address = [size memadr rf]
     elseif case == 4
         # Predecrement
-        
+
         address = [size decr11(step, r)[2:end]]
     elseif case == 5
         # Indirect Predecrement
@@ -145,11 +145,11 @@ function adr11(size, field)
         address = [size memadr rf]
     elseif case == 6
         # Index + Displacement
-        
+
         address = disp11(size, r)
     else
         # Indirect Index + Displacement
-        
+
         local rf = magni(read11(disp11(word, r)))
         address = [size memadr rf]
     end
@@ -168,7 +168,7 @@ function adr11fl(size, field)
         address = [size flregard r]
     elseif switch == 1
         # Indirect register
-        
+
         local rf = read11([word regadr r])
         address = [size memadr rf]
     elseif switch == 2
@@ -210,7 +210,7 @@ end
 
 function incr11(size, r)
     # DEC PDP11 postincrement
-    
+
     local address = [size memadr magni(regout(r))]
     local count = address[Value] + (size / byte)
     regin(r, magnr(word, count))
@@ -245,7 +245,7 @@ end
 function regout(adr)
     return reg[regmap11(adr),:]
 end
-    
+
 function od11(adr)
     return !isodd(adr) ? adr + 1 : adr
 end
@@ -357,7 +357,7 @@ end
 
 function cycle11()
     # Basic cycle of DEC PDP11
-    
+
     while(!stop)
         interrupt11()
         # execute(ifetch11())
@@ -374,7 +374,7 @@ end
 
 function adrcheck11(location)
     # DEC PDP11 address check
-    
+
     throw("Not implemented!")
     # report(Spec, location >= memcap)
     # Spec report 0≠(2⌊⍴,location)|⌊/location
@@ -465,9 +465,9 @@ oplist = [i, MOV, CMP, BIT, BIC, BIS, i, i, ADD, SUB, MUL, DIV, ASH, ASHC, XOR, 
 
 
 
-const dict = Dict{String,Tuple{String,UnitRange{Int64}}}("Byte" => ("10", 0:0),                                   
-     "Source" => ("10", 4:9),                                 
-     "OpCode" => ("11", 1:3),                                 
+const dict = Dict{String,Tuple{String,UnitRange{Int64}}}("Byte" => ("10", 0:0),
+     "Source" => ("10", 4:9),
+     "OpCode" => ("11", 1:3),
      "Dest" => ("10", 10:15),
      "RSource" => ("10", 7:9),
      "RDest" => ("10", 13:15),
@@ -477,29 +477,29 @@ const dict = Dict{String,Tuple{String,UnitRange{Int64}}}("Byte" => ("10", 0:0),
      "Ops" => ("11", 8:9),
      "Cadr" => ("10", 12:15),
      "Ope" => ("11", 13:15),
-     "Rfl" => ("10", 8:9))                                    
+     "Rfl" => ("10", 8:9))
 
 form = reshape(zeros(Int8, 0), 0, 0, 2)    #init form
-form = inPattern(form, "Byte OpCode Source Dest", dict)  
-form = inPattern(form, "0 1 1 0 Source Dest", dict) 
-form = inPattern(form, "1 1 1 0 Source Dest", dict) 
-form = inPattern(form, "0 1 1 1 Opb RSource Dest", dict)  
-form = inPattern(form, "0 0 0 0 Opf Offset", dict)  
-form = inPattern(form, "1 0 0 0 Opf Offset", dict)  
-form = inPattern(form, "1 1 1 1 Opf Rfl Dest", dict)  
-form = inPattern(form, "0 0 0 0 1 0 0 RSource Dest", dict)  
-form = inPattern(form, "Byte 0 0 0 1 0 1 0 Ops Dest", dict)  
-form = inPattern(form, "Byte 0 0 0 1 0 1 1 Ops Dest", dict)  
+form = inPattern(form, "Byte OpCode Source Dest", dict)
+form = inPattern(form, "0 1 1 0 Source Dest", dict)
+form = inPattern(form, "1 1 1 0 Source Dest", dict)
+form = inPattern(form, "0 1 1 1 Opb RSource Dest", dict)
+form = inPattern(form, "0 0 0 0 Opf Offset", dict)
+form = inPattern(form, "1 0 0 0 Opf Offset", dict)
+form = inPattern(form, "1 1 1 1 Opf Rfl Dest", dict)
+form = inPattern(form, "0 0 0 0 1 0 0 RSource Dest", dict)
+form = inPattern(form, "Byte 0 0 0 1 0 1 0 Ops Dest", dict)
+form = inPattern(form, "Byte 0 0 0 1 0 1 1 Ops Dest", dict)
 form = inPattern(form, "Byte 0 0 0 1 1 0 0 Ops Dest", dict)
-form = inPattern(form, "0 0 0 0 0 0 0 0 Ops Dest", dict)  
-form = inPattern(form, "0 0 0 0 1 1 0 1 Ops Dest", dict)  
-form = inPattern(form, "1 1 1 1 0 0 0 0 Ops Dest", dict)  
-form = inPattern(form, "1 1 1 1 0 0 0 1 Ops Dest", dict)  
+form = inPattern(form, "0 0 0 0 0 0 0 0 Ops Dest", dict)
+form = inPattern(form, "0 0 0 0 1 1 0 1 Ops Dest", dict)
+form = inPattern(form, "1 1 1 1 0 0 0 0 Ops Dest", dict)
+form = inPattern(form, "1 1 1 1 0 0 0 1 Ops Dest", dict)
 form = inPattern(form, "0 0 0 0 0 0 0 0 1 0 0 0 0 RDest", dict)
 form = inPattern(form, "0 0 0 0 0 0 0 0 1 0 0 1 1 RDest", dict)
 form = inPattern(form, "0 0 0 0 0 0 0 0 1 0 1 0 Cadr", dict)
 form = inPattern(form, "0 0 0 0 0 0 0 0 1 0 1 1 Cadr", dict)
-form = inPattern(form, "0 0 0 0 0 0 0 0 0 0 0 0 0 Ope", dict) 
+form = inPattern(form, "0 0 0 0 0 0 0 0 0 0 0 0 0 Ope", dict)
 form = inPattern(form, "1 1 1 1 0 0 0 0 0 0 0 0 0 Ope", dict)
 form = inPattern(form, "1 1 1 1 0 0 0 0 0 0 0 0 1 Ope", dict)
 

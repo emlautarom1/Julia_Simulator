@@ -1,6 +1,6 @@
 module inst_set11
 
-export  MOV, CMP, BIT, BIC, BIS, ADD, SUB, MUL, DIV, ASH, ASHC, XOR, SOB, BR, BNE, BEQ, BGE, BLT, BGT, BLE, BPL, BMI, BHI, BLOS, BVC, BVS, BCC, BCS, EMT, TRAP, MULF, MODF, ADDF, LDF, SUBF, CMPF, STF, DIVF, STEX, STCI, STCF, LDEX, LDCI, LDCF, JSR, CLR, COM, INC, DEC, NEG, ADC, SBC, TST, ROR, ROL, ASR, ASL, JMP, SWAB, MARK, SXT, LDFS, STFS, STST, CLRF, TSTF, ABSF, NEGF, RTS, SPL, CLCC, SECC, HALT, WAIT, RTI, BPT, IOT, RSET, RTT,  CFCC, SETF, SETI, SETD, SETL
+export MOV, CMP, BIT, BIC, BIS, ADD, SUB, MUL, DIV, ASH, ASHC, XOR, SOB, BR, BNE, BEQ, BGE, BLT, BGT, BLE, BPL, BMI, BHI, BLOS, BVC, BVS, BCC, BCS, EMT, TRAP, MULF, MODF, ADDF, LDF, SUBF, CMPF, STF, DIVF, STEX, STCI, STCF, LDEX, LDCI, LDCF, JSR, CLR, COM, INC, DEC, NEG, ADC, SBC, TST, ROR, ROL, ASR, ASL, JMP, SWAB, MARK, SXT, LDFS, STFS, STST, CLRF, TSTF, ABSF, NEGF, RTS, SPL, CLCC, SECC, HALT, WAIT, RTI, BPT, IOT, RSET, RTT,  CFCC, SETF, SETI, SETD, SETL
 
 # ------------------------------------
 # -- Data Manipulation Instructions --
@@ -40,23 +40,23 @@ function BIC()
 end
 
 function ASHC()
-    # dest←byte adr11 Dest 
-    
+    # dest←byte adr11 Dest
+
     # ⍝ Size of the shift
-    # shift ←radixcompi ¯6↑read11 dest 
-    
+    # shift ←radixcompi ¯6↑read11 dest
+
     # ⍝ The 2 Registers where it will be loaded the long number
     # od←regout fld Source[R]
     # od←od,regout odd11 fld Source[R]
     # value←radixcompi od
-    
+
     # ⍝ Depending on the value of shift, it will be right or left
     # result←value×radix*shift
 
     # rl←long radixcompr⌊result
     # (fld Source[R]) regin word ↑ rl
     # (odd11 fld Source[R]) regin word ↓ rl
-    
+
     # ⍝ Add a 0 to the last position where it will be the last bit shifted, which will be loaded into Carry
     # Carry stin ¯1↑shift⌽od,0
     # signal11NZO rl
@@ -88,7 +88,7 @@ function BIS()
     # od2← read11 dest
     # r1← od2 ∨ od1
     # dest write11 r1
-    # signal11NZ r1  
+    # signal11NZ r1
 end
 
 function BIT()
@@ -106,7 +106,7 @@ function ASL()
     # r1← size11 radixcompr result
     # dest write11 r1
     # Carry stin 1 ↑ od1
-    # signal11NZO r1  
+    # signal11NZO r1
 end
 
 function ASR()
@@ -114,7 +114,7 @@ function ASR()
     # dest←size11 adr11 Dest
     # ⍝ Gets operand
     # od←read11 dest
-    # ⍝ Shift by duplicating first bit and dropping last    
+    # ⍝ Shift by duplicating first bit and dropping last
     # r1←od[0],¯1↓od
     # ⍝ Logic shift is the same, but od[0] is replaced with 0
     # dest write11 r1
@@ -154,7 +154,7 @@ function SXT()
     # DEC PDP11 Extend Sign
     # r1← word⍴stout Neg
     # (word adr11 Dest) write11 r1
-    # signal11NZ r1    
+    # signal11NZ r1
 end
 
 function NEG()
@@ -178,7 +178,7 @@ function ADD()
 	# sum←augend+addend
 	# ⍝ APL Add
 	# rl←word radixcompr sum
-	# ⍝ sum representation as word in rl 
+	# ⍝ sum representation as word in rl
 	# dest write11 rl
 	# ⍝ write in dest the representation
 	# signal11NZO rl
@@ -194,7 +194,7 @@ function ADC()
     # sum←augend+addend
 	# rl←size11 radixcompr sum
 
-	# ⍝ sum representation as word in rl 
+	# ⍝ sum representation as word in rl
 	# dest write11 rl
 	# ⍝ write in dest the representation
 	# signal11NZO rl
@@ -308,15 +308,15 @@ function MUL()
     # multiplicand← radixcompi reg[dest;]
 
     # product ← multiplicand × multiplier
-    
+
     # rl ← long radixcompr product
-    
-    # ⍝ Set high order product 
+
+    # ⍝ Set high order product
     # dest regin word ↑ rl
 
     # ⍝ Set low order product
     # (odd11 dest) regin word ↓ rl
-    
+
     # ⍝ Set flags
     # signal11NZ rl
     # Carry stin ∨/ rl[0] ≠ word ↑ rl

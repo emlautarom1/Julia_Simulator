@@ -21,9 +21,9 @@ const point = length(Coef) - 1
 const expextr = radix^(length(Exp) - 1)
 
 
-#-----------------------------------------------------------------
-#--                     radix complement                        --
-#-----------------------------------------------------------------
+# -----------------------------------------------------------------
+# --                     radix complement                        --
+# -----------------------------------------------------------------
 
 function radixcompi(rep::Vector{Int8})::BigInt
     if (isempty(rep))
@@ -36,7 +36,7 @@ function radixcompi(rep::Vector{Int8})::BigInt
         end
         if t >= (modulus >> 1)
             t = t - modulus
-        end    
+        end
         return t
     end
 end
@@ -65,9 +65,9 @@ function radixcompr(size::Int64, num::Int64)::Tuple{Vector{Int8},Int64,Int64}
     return radixcompr(size, t)
 end
 
-#---------------------------------------------------------
-#--                 digit complement                    --
-#---------------------------------------------------------
+# ---------------------------------------------------------
+# --                 digit complement                    --
+# ---------------------------------------------------------
 
 # One's Complement
 
@@ -104,7 +104,7 @@ function digitcompr(size::Int64, num::BigInt)::Tuple{Vector{Int8},Int64,Int64}
         t[axes(t, 1)[end] - i + 1] = mod(num, radix)
         num = BigInt(floor(num / radix))
     end
-    
+
     return (t, xmin, xmax)
 end
 
@@ -113,9 +113,9 @@ function digitcompr(size::Int64, num::Int64)::Tuple{Vector{Int8},Int64,Int64}
     return digitcompr(size, t)
 end
 
-#-----------------------------------------------------------------
-#--                        magnitude                            --
-#-----------------------------------------------------------------
+# -----------------------------------------------------------------
+# --                        magnitude                            --
+# -----------------------------------------------------------------
 
 function magni(rep::Vector{Int8})::BigInt
     if (isempty(rep))
@@ -135,7 +135,7 @@ function magn0i(rep::Vector{Int8})::BigInt
     else
         local modulus = radix^(length(rep))
         local value = magni(rep)
-        return value + modulus*(value == 0)
+        return value + modulus * (value == 0)
     end
 end
 
@@ -154,7 +154,7 @@ function magnr(size::Int64, num::BigInt)::Tuple{Vector{Int8},Int64,Int64}
         t[axes(t, 1)[end] - i + 1] = mod(num, radix)
         num = BigInt(floor(num / radix))
     end
-    
+
     return (t, xmin, xmax)
 end
 
@@ -162,9 +162,9 @@ function magnr(size::Int64, num::Int64)::Tuple{Vector{Int8},Int64,Int64}
     return magnr(size, BigInt(num))
 end
 
-#-----------------------------------------------------------------
-#--                     sign-magnitude                          --
-#-----------------------------------------------------------------
+# -----------------------------------------------------------------
+# --                     sign-magnitude                          --
+# -----------------------------------------------------------------
 
 function signmagni(rep::Vector{Int8})::BigInt
     if (isempty(rep))
@@ -197,7 +197,7 @@ function signmagnr(size::Int64, num::BigInt)::Tuple{Vector{Int8},Int64,Int64}
         num = BigInt(floor(num / radix))
     end
     t[1] = sign
-    
+
     return (t, xmin, xmax)
 end
 
@@ -206,9 +206,9 @@ function signmagnr(size::Int64, num::Int64)::Tuple{Vector{Int8},Int64,Int64}
     return signmagnr(size, t)
 end
 
-#-----------------------------------------------------------------
-#--                     bias radix^n/2                          --
-#-----------------------------------------------------------------
+# -----------------------------------------------------------------
+# --                     bias radix^n/2                          --
+# -----------------------------------------------------------------
 
 function biasi(rep::Vector{Int8})::BigInt
     local bias::BigInt = div(radix^length(rep), 2)
@@ -217,7 +217,7 @@ function biasi(rep::Vector{Int8})::BigInt
     for i in 2:axes(rep, 1)[end]
         t = (t * radix) + rep[i]
     end
-    
+
     return t = t - bias
 end
 
@@ -238,7 +238,7 @@ function biasr(size::Int64, num::BigInt)::Tuple{Vector{Int8},Int64,Int64}
         t[axes(t, 1)[end] - i + 1] = mod(num, radix)
         num = BigInt(floor(num / radix))
     end
-    
+
     return (t, xmin, xmax)
 end
 
@@ -253,9 +253,9 @@ function wide(sz, in)
     in = Array{eltype(in),2}(transpose(reshape(vcat(z, vec(in)), dim)))
 end
 
-#--------------------------------------------------------------------------
-#--                      floating-point functions                        --
-#--------------------------------------------------------------------------
+# --------------------------------------------------------------------------
+# --                      floating-point functions                        --
+# --------------------------------------------------------------------------
 
 function hidebit(rep::Vector{Int8})::Vector{Int8}
     rep[2] = rep[1]
@@ -295,7 +295,7 @@ function normalize(expzero::Int64, num::Real, exp::Int64)::Tuple{Int64,Real}
         exponent = max(expnorm, exp)
     end
     coefficient = num / BigFloat(base)^(exponent - point)
-    
+
     return (exponent, coefficient)
 end
 
@@ -303,7 +303,7 @@ function flbsi(rep::Vector{Int8})::Tuple{Int64,Real}
     local coeff::BigInt = signmagni(insertbit(rep[Coef]))
     local exp::Int64 = biasi(rep[Exp])
     local num::BigFloat = coeff * BigFloat(base)^(-point)
-    
+
     return (exp, num)
 end
 
@@ -316,15 +316,15 @@ function flbsr(size::Int64, num::Real, exp::Int64)::Tuple{Vector{Int8},Int64,Int
     rep[Exp], xmin, xmax = biasr(length(Exp), BigInt(exponent))
     rep[1] = t[1]
     rep[Coef[3]:Coef[end]] = t[3:end]
-    local d = reduce(&, map(x->x == 0, rep[2:end]))
-    if num < 0.0                          
-        if d                                #very small denormal
-            return (rep, 0, 1, 0, 0)            
+    local d = reduce(&, map(x -> x == 0, rep[2:end]))
+    if num < 0.0
+        if d                                # very small denormal
+            return (rep, 0, 1, 0, 0)
         else
             return (rep, xmax, xmin, 0, 0)
         end
     else
-        if d && num > 0.0                     #very small denormal
+        if d && num > 0.0                     # very small denormal
             return (rep, 0, 0, 1, 0)
         else
             return (rep, 0, 0, xmin, xmax)
@@ -332,22 +332,22 @@ function flbsr(size::Int64, num::Real, exp::Int64)::Tuple{Vector{Int8},Int64,Int
     end
 end
 
-#---------------------------------------------------------------------------------
-#--          form's initial value = reshape(zeros(Int8,0),0,0,2)                --
-#--          dictionary example for PDP-11                                      --
-#--          dict=Dict{String,Tuple{String,UnitRange{Int64}}}                   --
-#--                  ("Byte"=>("10",0:0),                                       --
-#--                   "Source"=>("10",4:9),                                     --
-#--                   "OpCode"=>("11",1:3),                                     --
-#--                   "Dest"=>("10",10:15))                                     --
-#---------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------------
+# --          form's initial value = reshape(zeros(Int8,0),0,0,2)                --
+# --          dictionary example for PDP-11                                      --
+# --          dict=Dict{String,Tuple{String,UnitRange{Int64}}}                   --
+# --                  ("Byte"=>("10",0:0),                                       --
+# --                   "Source"=>("10",4:9),                                     --
+# --                   "OpCode"=>("11",1:3),                                     --
+# --                   "Dest"=>("10",10:15))                                     --
+# ---------------------------------------------------------------------------------
 function inPattern(form::Array{Int8,3},
                    patt::String,
                    dict::Dict{String,Tuple{String,UnitRange{Int64}}})::Array{Int8,3}
 
     local s = size(form)
-    local p = replace(replace(patt, r"(0|1)( |$)" => x->"0" * rstrip(x)), r"(?<tok>[a-z][a-z0-9]+( |$))"i => 
-                    x->(string(dict[rstrip(x)][1]))^length(dict[rstrip(x)][2]))
+    local p = replace(replace(patt, r"(0|1)( |$)" => x -> "0" * rstrip(x)), r"(?<tok>[a-z][a-z0-9]+( |$))"i =>
+                    x -> (string(dict[rstrip(x)][1]))^length(dict[rstrip(x)][2]))
     local l = div(length(p), 2)
     if l < s[2]
         p = rpad(p, s[2] << 1, "10")
@@ -360,19 +360,19 @@ function inPattern(form::Array{Int8,3},
         exp[:,:,1] = reshape(ones(Int8, s[1] * (l - s[2])), s[1], l - s[2], 1)
         form = hcat(form, exp)
     end
-    #add pattern to form
-    local entry = reshape(vec(transpose(map(x->Int8(x) - 48, reshape(collect(p), 2, l)))), 1, l, 2)
+    # add pattern to form
+    local entry = reshape(vec(transpose(map(x -> Int8(x) - 48, reshape(collect(p), 2, l)))), 1, l, 2)
     form = vcat(form, entry)
 end
 
 
-#-----------------------------------------------------------------
-#--            Machine Language Interpretation functions        --
-#-----------------------------------------------------------------
+# -----------------------------------------------------------------
+# --            Machine Language Interpretation functions        --
+# -----------------------------------------------------------------
 
-function decode(inst::Array{Int8,1}, 
-                form::Array{Int8,3}, 
-                oplist::Array{Function,1}, 
+function decode(inst::Array{Int8,1},
+                form::Array{Int8,3},
+                oplist::Array{Function,1},
                 orop::Array{Int64,1})::Function
     # OP Code decoding:
     # 11 = opcode
@@ -380,7 +380,7 @@ function decode(inst::Array{Int8,1},
     # 01 = 1
     # 00 = 0
     local f = form[:, collect(1:length(inst)),:]
- 
+
     local i = size(form)[1] # last match index
     local ty = -1
     while (ty < 0)
@@ -391,16 +391,16 @@ function decode(inst::Array{Int8,1},
             i -= 1
         end
     end
-    local off = Int64(magni(inst[findall(x->x == 1, map(&, f[i,:,1], f[i,:,2]))]))
+    local off = Int64(magni(inst[findall(x -> x == 1, map(&, f[i,:,1], f[i,:,2]))]))
     return oplist[orop[ty] + off]
 end
 
-#---------------------------------
-#--       Other functions       --
-#---------------------------------
+# ---------------------------------
+# --       Other functions       --
+# ---------------------------------
 
 function carryfrom(expmod, operands)::Int8
-    local carry = (radix^expmod) <= sum(map(x->x % radix^expmod, operands))
+    local carry = (radix^expmod) <= sum(map(x -> x % radix^expmod, operands))
     return Int8(carry)
 end
 
@@ -412,4 +412,4 @@ function fld0(inst, field)
     return magn0i(inst[field])
 end
 
-end #module
+end # module

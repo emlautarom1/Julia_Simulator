@@ -7,7 +7,7 @@ println("Running `status11.jl`...")
 
 # Mode control
 const Currentmode = [1, 2]
-const Previousmode = [3, 4] 
+const Previousmode = [3, 4]
 # Register set
 const Regset = 4
 # Interrupt priority
@@ -22,6 +22,6 @@ const Carry = 15
 # Mode codification
 const Kernel = 0
 const Supervisor = 1
-const User = 2   
+const User = 2
 
 end
