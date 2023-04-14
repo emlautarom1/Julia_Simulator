@@ -54,7 +54,7 @@ function radixcompr(size::Int64, num::BigInt)::Tuple{Vector{Int8},Int64,Int64}
         xmin = 1
     end
     for i in axes(t, 1)
-        t[axes(t, 1)[end] - i + 1] = mod(num, radix)
+        t[axes(t, 1)[end]-i+1] = mod(num, radix)
         num = BigInt(floor(num / radix))
     end
 
@@ -102,7 +102,7 @@ function digitcompr(size::Int64, num::BigInt)::Tuple{Vector{Int8},Int64,Int64}
     end
     num = mod(num, modulus)
     for i in axes(t, 1)
-        t[axes(t, 1)[end] - i + 1] = mod(num, radix)
+        t[axes(t, 1)[end]-i+1] = mod(num, radix)
         num = BigInt(floor(num / radix))
     end
 
@@ -152,7 +152,7 @@ function magnr(size::Int64, num::BigInt)::Tuple{Vector{Int8},Int64,Int64}
         xmin = 1
     end
     for i in axes(t, 1)
-        t[axes(t, 1)[end] - i + 1] = mod(num, radix)
+        t[axes(t, 1)[end]-i+1] = mod(num, radix)
         num = BigInt(floor(num / radix))
     end
 
@@ -194,7 +194,7 @@ function signmagnr(size::Int64, num::BigInt)::Tuple{Vector{Int8},Int64,Int64}
     local sign = (num < 0) ? minus : plus
     num = abs(num)
     for i in axes(t, 1)
-        t[axes(t, 1)[end] - i + 1] = mod(num, radix)
+        t[axes(t, 1)[end]-i+1] = mod(num, radix)
         num = BigInt(floor(num / radix))
     end
     t[1] = sign
@@ -214,7 +214,11 @@ end
 function biasi(rep::Vector{Int8})::BigInt
     local bias::BigInt = div(radix^length(rep), 2)
     local t::BigInt = 0
-    try t = rep[1] catch; return 0 end
+    try
+        t = rep[1]
+    catch
+        return 0
+    end
     for i in 2:axes(rep, 1)[end]
         t = (t * radix) + rep[i]
     end
@@ -236,7 +240,7 @@ function biasr(size::Int64, num::BigInt)::Tuple{Vector{Int8},Int64,Int64}
     end
     num = num + bias
     for i in axes(t, 1)
-        t[axes(t, 1)[end] - i + 1] = mod(num, radix)
+        t[axes(t, 1)[end]-i+1] = mod(num, radix)
         num = BigInt(floor(num / radix))
     end
 
@@ -269,17 +273,17 @@ function insertbit(rep::Vector{Int8})::Vector{Int8}
 end
 
 function truncate(num::Real)::BigInt
-# truncation to zero
+    # truncation to zero
     BigInt(sign(num) * floor(abs(num)))
 end
 
 function round(num::Real)::Real
-# algebraic round
+    # algebraic round
     sign(num) * (floor(0.5 + abs(num)))
 end
 
 function trueround(num::Real)::Real
-# unbiased algebraic round
+    # unbiased algebraic round
     local bias::Bool = 0.5 ≠ mod(abs(num), 2)
     sign(num) * (floor(0.5 * bias + abs(num)))
 end
@@ -343,12 +347,12 @@ end
 # --                   "Dest"=>("10",10:15))                                     --
 # ---------------------------------------------------------------------------------
 function inPattern(form::Array{Int8,3},
-                   patt::String,
-                   dict::Dict{String,Tuple{String,UnitRange{Int64}}})::Array{Int8,3}
+    patt::String,
+    dict::Dict{String,Tuple{String,UnitRange{Int64}}})::Array{Int8,3}
 
     local s = size(form)
     local p = replace(replace(patt, r"(0|1)( |$)" => x -> "0" * rstrip(x)), r"(?<tok>[a-z][a-z0-9]+( |$))"i =>
-                    x -> (string(dict[rstrip(x)][1]))^length(dict[rstrip(x)][2]))
+        x -> (string(dict[rstrip(x)][1]))^length(dict[rstrip(x)][2]))
     local l = div(length(p), 2)
     if l < s[2]
         p = rpad(p, s[2] << 1, "10")
@@ -358,7 +362,7 @@ function inPattern(form::Array{Int8,3},
         # wide the table form
         # Check for a more elegant implementation
         local exp = reshape(zeros(Int8, s[1] * (l - s[2]) * s[3]), (s[1], l - s[2], s[3]))
-        exp[:,:,1] = reshape(ones(Int8, s[1] * (l - s[2])), s[1], l - s[2], 1)
+        exp[:, :, 1] = reshape(ones(Int8, s[1] * (l - s[2])), s[1], l - s[2], 1)
         form = hcat(form, exp)
     end
     # add pattern to form
@@ -372,28 +376,28 @@ end
 # -----------------------------------------------------------------
 
 function decode(inst::Array{Int8,1},
-                form::Array{Int8,3},
-                oplist::Array{Function,1},
-                orop::Array{Int64,1})::Function
+    form::Array{Int8,3},
+    oplist::Array{Function,1},
+    orop::Array{Int64,1})::Function
     # OP Code decoding:
     # 11 = opcode
     # 10 = -x-
     # 01 = 1
     # 00 = 0
-    local f = form[:, collect(1:length(inst)),:]
+    local f = form[:, collect(1:length(inst)), :]
 
     local i = size(form)[1] # last match index
     local ty = -1
     while (ty < 0)
-            # Check reduce: should reduce in only one dimension
-        if reduce(&, (map(|, f[i,:,1], f[i,:,2]) .>= inst)) && reduce(&, (map(<, f[i,:,1], f[i,:,2]) .<= inst))
+        # Check reduce: should reduce in only one dimension
+        if reduce(&, (map(|, f[i, :, 1], f[i, :, 2]) .>= inst)) && reduce(&, (map(<, f[i, :, 1], f[i, :, 2]) .<= inst))
             ty = i
         else
             i -= 1
         end
     end
-    local off = Int64(magni(inst[findall(x -> x == 1, map(&, f[i,:,1], f[i,:,2]))]))
-    return oplist[orop[ty] + off]
+    local off = Int64(magni(inst[findall(x -> x == 1, map(&, f[i, :, 1], f[i, :, 2]))]))
+    return oplist[orop[ty]+off]
 end
 
 # ---------------------------------
@@ -413,4 +417,4 @@ function fld0(inst, field)
     return magn0i(inst[field])
 end
 
-end # module
+end

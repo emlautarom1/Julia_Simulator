@@ -1,7 +1,7 @@
 module inst_set11
 @debug "Loading $(@__MODULE__)"
 
-export MOV, CMP, BIT, BIC, BIS, ADD, SUB, MUL, DIV, ASH, ASHC, XOR, SOB, BR, BNE, BEQ, BGE, BLT, BGT, BLE, BPL, BMI, BHI, BLOS, BVC, BVS, BCC, BCS, EMT, TRAP, MULF, MODF, ADDF, LDF, SUBF, CMPF, STF, DIVF, STEX, STCI, STCF, LDEX, LDCI, LDCF, JSR, CLR, COM, INC, DEC, NEG, ADC, SBC, TST, ROR, ROL, ASR, ASL, JMP, SWAB, MARK, SXT, LDFS, STFS, STST, CLRF, TSTF, ABSF, NEGF, RTS, SPL, CLCC, SECC, HALT, WAIT, RTI, BPT, IOT, RSET, RTT,  CFCC, SETF, SETI, SETD, SETL
+export MOV, CMP, BIT, BIC, BIS, ADD, SUB, MUL, DIV, ASH, ASHC, XOR, SOB, BR, BNE, BEQ, BGE, BLT, BGT, BLE, BPL, BMI, BHI, BLOS, BVC, BVS, BCC, BCS, EMT, TRAP, MULF, MODF, ADDF, LDF, SUBF, CMPF, STF, DIVF, STEX, STCI, STCF, LDEX, LDCI, LDCF, JSR, CLR, COM, INC, DEC, NEG, ADC, SBC, TST, ROR, ROL, ASR, ASL, JMP, SWAB, MARK, SXT, LDFS, STFS, STST, CLRF, TSTF, ABSF, NEGF, RTS, SPL, CLCC, SECC, HALT, WAIT, RTI, BPT, IOT, RSET, RTT, CFCC, SETF, SETI, SETD, SETL
 
 # ------------------------------------
 # -- Data Manipulation Instructions --
@@ -171,20 +171,20 @@ end
 function ADD()
     # Non FloatingPoint
     # ad←read11 word adr11 Source
-	# ⍝ ad has word bits from "Space[Value]"
-	# addend←radixcompi ad
-	# ⍝ Interpreted bits as radix complement
-	# dest←word adr11 Dest
-	# augend←radixcompi read11 dest
-	# sum←augend+addend
-	# ⍝ APL Add
-	# rl←word radixcompr sum
-	# ⍝ sum representation as word in rl
-	# dest write11 rl
-	# ⍝ write in dest the representation
-	# signal11NZO rl
-	# cy←word carryfrom augend,addend
-	# Carry stin cy
+    # ⍝ ad has word bits from "Space[Value]"
+    # addend←radixcompi ad
+    # ⍝ Interpreted bits as radix complement
+    # dest←word adr11 Dest
+    # augend←radixcompi read11 dest
+    # sum←augend+addend
+    # ⍝ APL Add
+    # rl←word radixcompr sum
+    # ⍝ sum representation as word in rl
+    # dest write11 rl
+    # ⍝ write in dest the representation
+    # signal11NZO rl
+    # cy←word carryfrom augend,addend
+    # Carry stin cy
 end
 
 function ADC()
@@ -193,14 +193,14 @@ function ADC()
     # ⍝ Interpreted bits as radix complement
     # augend←radixcompi read11 dest
     # sum←augend+addend
-	# rl←size11 radixcompr sum
+    # rl←size11 radixcompr sum
 
-	# ⍝ sum representation as word in rl
-	# dest write11 rl
-	# ⍝ write in dest the representation
-	# signal11NZO rl
-	# cy←word carryfrom augend,addend
-	# Carry stin cy
+    # ⍝ sum representation as word in rl
+    # dest write11 rl
+    # ⍝ write in dest the representation
+    # signal11NZO rl
+    # cy←word carryfrom augend,addend
+    # Carry stin cy
 end
 
 function ASH()
@@ -227,33 +227,33 @@ end
 
 function SUB()
     # ad←read11 word adr11 Source
-	# addend←radixcompi ~ad
-	# ⍝ Interpreted bits as radix complement
-	# dest←word adr11 Dest
-	# augend←radixcompi read11 dest
-	# add←addend+augend+1
-	# ⍝ APL sub
-	# r1←word radixcompr add
-	# ⍝ sub representation as word in r1
-	# dest write11 r1
-	# ⍝ write in dest the representation
-	# signal11NZO r1
-	# cy←word carryfrom addend,augend,1
-	# Carry stin ~cy
+    # addend←radixcompi ~ad
+    # ⍝ Interpreted bits as radix complement
+    # dest←word adr11 Dest
+    # augend←radixcompi read11 dest
+    # add←addend+augend+1
+    # ⍝ APL sub
+    # r1←word radixcompr add
+    # ⍝ sub representation as word in r1
+    # dest write11 r1
+    # ⍝ write in dest the representation
+    # signal11NZO r1
+    # cy←word carryfrom addend,augend,1
+    # Carry stin ~cy
 end
 
 function SBC()
     # dest←size11 adr11 Dest
-	# augend←radixcompi read11 dest
+    # augend←radixcompi read11 dest
     # ad←size11 radixcompr stout Carry
     # addend←radixcompi ~ad
-	# ⍝ APL sbc
-	# result←augend + addend + 1
+    # ⍝ APL sbc
+    # result←augend + addend + 1
     # ⍝ Reprensentation
     # r1←size11 radixcompr result
-	# ⍝ write in dest the representation
-	# dest write11 r1
-	# ⍝ Flag checks
+    # ⍝ write in dest the representation
+    # dest write11 r1
+    # ⍝ Flag checks
     # signal11NZ r1
     # Oflo stin xmax
     # Carry stin ~size11 carryfrom augend,addend,1
@@ -261,43 +261,43 @@ end
 
 function DIV()
     # dvsr←read11 word adr11 Dest
-	# divisor←radixcompi dvsr
+    # divisor←radixcompi dvsr
     # divz←divisor=0
-	# ⍝ Interpreted bits as radix complement
+    # ⍝ Interpreted bits as radix complement
     # dest←fld Source[R]
     # dvnd←(regout dest),regout odd11 dest
     # dividend←radixcompi dvnd
     # ovf←(|radixcompi regout dest)>|divisor
     # →If ~divz∨ovf
-	# THEN:
+    # THEN:
     #     div←⌊dividend÷divisor
     #     rem←dividend-divisor×⌊dividend÷divisor
-	#     ⍝ APL div
+    #     ⍝ APL div
     #     r2← word radixcompr rem
     #     (word,regadr,odd11 dest) write11 r2
-	#     r1←word radixcompr div
+    #     r1←word radixcompr div
     #     (word,regadr,dest) write11 r1
- 	#     signal11NZ r1
+    #     signal11NZ r1
     # ENDIF:
     # Oflo stin divz∨ovf
     # Carry stin divzdvsr←read11 word adr11 Dest
-	# divisor←radixcompi dvsr
+    # divisor←radixcompi dvsr
     # divz←divisor=0
-	# ⍝ Interpreted bits as radix complement
+    # ⍝ Interpreted bits as radix complement
     # dest←fld Source[R]
     # dvnd←(regout dest),regout odd11 dest
     # dividend←radixcompi dvnd
     # ovf←(|radixcompi regout dest)>|divisor
     # →If ~divz∨ovf
-	# THEN:
+    # THEN:
     #     div←⌊dividend÷divisor
     #     rem←dividend-divisor×⌊dividend÷divisor
-	#     ⍝ APL div
+    #     ⍝ APL div
     #     r2← word radixcompr rem
     #     (word,regadr,odd11 dest) write11 r2
-	#     r1←word radixcompr div
+    #     r1←word radixcompr div
     #     (word,regadr,dest) write11 r1
- 	#     signal11NZ r1
+    #     signal11NZ r1
     # ENDIF:
     # Oflo stin divz∨ovf
     # Carry stin divz
