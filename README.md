@@ -1,4 +1,4 @@
-# Julia Simulator
+# pdp11.jl
 
 ## Run the PDP11 Machine
 ```
@@ -6,6 +6,7 @@ $ cd Julia_Simulator
 $ julia --project=.
 julia> include("src/pdp11.jl")
 ```
+
 ### Example
 ```
 julia> pdp11.basics.decode(vec(Int8[1 1 0 1 0 1 0 1 1 1 0 0 0 0 0 1]),pdp11.form,pdp11.oplist,pdp11.orop)
@@ -45,4 +46,4 @@ $ julia --project=.
 
 ## References
 
-- **Gerritt A. Blaauw, Frederick P. Brooks Jr. Frend, Computer Architecture: Concepts and Evolution 1st Edition (Addison-Wesley, 1997)**
+- Gerritt A. Blaauw, Frederick P. Brooks Jr. Frend, Computer Architecture: Concepts and Evolution 1st Edition (Addison-Wesley, 1997)
