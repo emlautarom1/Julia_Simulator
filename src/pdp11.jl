@@ -5,16 +5,16 @@ module pdp11
 @debug "Loading $(@__MODULE__)"
 
 include("./basics.jl")
-include("./instruction11.jl") # No dependencies
-include("./indicator11.jl") # Calls indicator11io, no dependencies
-include("./inst_set11.jl") # No dependencies
-include("./address11.jl") # No dependencies
-include("./format11.jl") # No dependencies
-include("./status11.jl") # No dependencies
-include("./status11fl.jl") # No dependencies
-include("./configure11.jl") # Depends on format11
-include("./space11.jl") # Depends on format11, configure11
-include("./name11.jl") # Depends on configure11
+include("./instruction11.jl")
+include("./indicator11.jl")
+include("./inst_set11.jl")
+include("./address11.jl")
+include("./format11.jl")
+include("./status11.jl")
+include("./status11fl.jl")
+include("./configure11.jl")
+include("./space11.jl")
+include("./name11.jl")
 
 using
     .basics,
