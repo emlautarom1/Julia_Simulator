@@ -2,7 +2,7 @@
 
 ## Run the PDP11 Machine
 ```
-$ cd Julia_Simulator
+$ cd pdp11.jl
 $ julia --project=.
 julia> include("src/pdp11.jl")
 ```
@@ -15,7 +15,7 @@ julia> pdp11.basics.decode(vec(Int8[1 1 0 1 0 1 0 1 1 1 0 0 0 0 0 1]),pdp11.form
 
 ## Run test suite
 ```
-$ cd Julia_Simulator
+$ cd pdp11.jl
 $ julia --project=.
 # Enter Pkg with ']'
 (pdp11) pkg> test
