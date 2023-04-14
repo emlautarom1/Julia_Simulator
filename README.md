@@ -1,5 +1,7 @@
 # pdp11.jl
 
+![PDP11/40](pdp-11-40.jpg)
+
 ## Run the PDP11 Machine
 ```
 $ cd pdp11.jl
