@@ -1,8 +1,7 @@
 module address11
+@debug "Loading $(@__MODULE__)"
 
 export Size, Space, Value, regadr, flregard, memadr
-
-println("Running `addres11.jl`...")
 
 # Load before allocation
 # Attributes

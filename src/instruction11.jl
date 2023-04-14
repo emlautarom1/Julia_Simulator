@@ -1,9 +1,7 @@
 module instruction11
+@debug "Loading $(@__MODULE__)"
 
 export Byte, Source, Opcode, Dest, Rfl, Cadr, Opb, Opf, Offset, Ops, Ope, M, R
-
-# Debug print
-println("Running `instruction11.jl`...")
 
 # Size specification
 const Byte = 0:0

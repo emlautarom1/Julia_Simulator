@@ -1,9 +1,7 @@
 module indicator11io
+@debug "Loading $(@__MODULE__)"
 
 export Ttyin, Ttyout, Ptpin, Ptpout, Clock, Realtime, Printer, Disk256, Disk64, Dectape, Diskcrd, Tape
-
-# Debug print
-println("Running `indicator11.jl`...")
 
 const Ttyin = 12
 const Ttyout = 13

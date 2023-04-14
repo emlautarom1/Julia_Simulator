@@ -1,9 +1,7 @@
 module status11fl
+@debug "Loading $(@__MODULE__)"
 
 export Fer, Fid, Fiuv, Fiu, Fiv, Fic, Fd, Fl, Ft, Neg, Zero, Oflo, Carry, flinvop, fldivide, floflo, fluflo, flundef, flmaint
-
-# Debug print
-println("Running `status11fl.jl`...")
 
 # Floating point error DEC PDP-11
 # Error

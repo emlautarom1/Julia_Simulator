@@ -1,9 +1,7 @@
 module status11
+@debug "Loading $(@__MODULE__)"
 
 export Currentmode, Previousmode, Regset, Priority, Trace, Neg, Zero, Oflo, Carry, Kernel, Supervisor, User
-
-# Debug print
-println("Running `status11.jl`...")
 
 # Mode control
 const Currentmode = [1, 2]

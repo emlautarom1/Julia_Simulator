@@ -1,13 +1,11 @@
 module name11
+@debug "Loading $(@__MODULE__)"
 
 export Psw, Slw, Piw, Intvec, Sp, Pc
 
 include("./configure11.jl")
 include("./name11io.jl")
 using .configure11
-
-# Debug print
-println("Running `name11.jl`...")
 
 # Memory embedding
 # Program status

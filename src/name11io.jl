@@ -1,12 +1,10 @@
 module name11io
+@debug "Loading $(@__MODULE__)"
 
 export Ttyinw, Ttyoutw, Ptpinw, Ptpoutw, Clockw, Realtimew, Printerw, Disk256w, Disk64w, Dectapew, Diskcrdw, Tapew
 
 include("./configure11.jl")
 using .configure11
-
-# Debug print
-println("Running `name11io.jl`...")
 
 const Ttyinw = memcap - 142
 const Ttyoutw = memcap - 138

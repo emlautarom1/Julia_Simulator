@@ -1,4 +1,5 @@
 module space11
+@debug "Loading $(@__MODULE__)"
 
 export memory, reg, flreg, ind, flstatus, fle, stop, wait
 
@@ -6,9 +7,6 @@ include("./format11.jl")
 include("./configure11.jl")
 
 using .format11, .configure11
-
-# Debug print
-println("Running `space11.jl`...")
 
 # Range from 0.. radix - 1
 # Ex: radix = 2 => [0, 1]

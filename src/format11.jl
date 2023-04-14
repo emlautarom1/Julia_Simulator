@@ -1,8 +1,7 @@
 module format11
-export radix, byte, word, long, double, adrcap
+@debug "Loading $(@__MODULE__)"
 
-# Debug print
-println("Running `format11.jl`...")
+export radix, byte, word, long, double, adrcap
 
 # Representation Unit
 const radix = 2

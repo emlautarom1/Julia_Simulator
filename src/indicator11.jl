@@ -1,11 +1,9 @@
 module indicator11
+@debug "Loading $(@__MODULE__)"
 
 include("./indicator11io.jl")
 
 export Warning, Spec, Invop, Bpt, Iot, Powerfail, Emt, Trap, Pir, Fle
-
-# Debug print
-println("Running `indicator11.jl`...")
 
 # Program
 const Warning = 0

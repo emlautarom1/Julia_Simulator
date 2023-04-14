@@ -1,4 +1,5 @@
 module basics
+@debug "Loading $(@__MODULE__)"
 
 export +, radix, byte, radixcompi, radixcompr, digitcompi, digitcompr, magni, magnr, signmagni, signmagnr
 export biasi, biasr, hidebit, insertbit, truncate, round, trueround, normalize, flbsi, flbsr, wide

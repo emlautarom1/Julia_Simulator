@@ -2,6 +2,8 @@
 #--                               pdp-11.jl                                  --
 #------------------------------------------------------------------------------
 module pdp11
+@debug "Loading $(@__MODULE__)"
+
 include("./basics.jl")
 include("./instruction11.jl") # No dependencies
 include("./indicator11.jl") # Calls indicator11io, no dependencies
