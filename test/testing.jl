@@ -1,4 +1,76 @@
-include("pdp11.jl")
+include("../src/pdp11.jl")
+include("../src/basics.jl")
+
+using Test
+
+@testset "Basic Decoding" begin
+    local test_decode(inst) = pdp11.basics.decode(vec(inst), pdp11.form, pdp11.oplist, pdp11.orop)
+
+    @testset "ADD" begin
+        @test test_decode(Int8[0 1 1 0 0 1 0 1 1 1 0 0 0 0 0 0]) == pdp11.ADD
+    end
+    @testset "BIS" begin
+        Int8[0 1 0 1 0 0 0 0 0 0 0 0 0 0 0 1] == pdp11.BIS
+    end
+    @testset "ASL" begin
+        Int8[0 0 0 0 1 1 0 0 1 1 0 0 0 0 0 0] == pdp11.ASL
+    end
+    @testset "ROR" begin
+        Int8[1 0 0 0 1 1 0 0 0 0 0 0 0 0 0 0] == pdp11.ROR
+    end
+    @testset "CLR" begin
+        Int8[0 0 0 0 1 0 1 0 0 0 0 0 0 0 0 0] == pdp11.CLR
+    end
+    @testset "XOR" begin
+        Int8[0 1 1 1 1 0 0 0 0 0 0 0 0 0 0 1] == pdp11.XOR
+    end
+    @testset "DEC" begin
+        Int8[0 0 0 0 1 0 1 0 1 1 0 0 0 0 0 0] == pdp11.DEC
+    end
+    @testset "SUB" begin
+        Int8[1 1 1 0 0 1 0 1 1 1 0 0 0 0 0 0] == pdp11.SUB
+    end
+    @testset "SBC" begin
+        Int8[0 0 0 0 1 0 1 1 1 0 0 0 0 0 0 0] == pdp11.SBC
+    end
+    @testset "DIV" begin
+        Int8[0 1 1 1 0 0 1 0 0 0 0 1 0 1 1 1] == pdp11.DIV
+    end
+    @testset "LDCI" begin
+        Int8[1 1 1 1 1 1 1 0 0 0 0 1 0 1 1 1] == pdp11.LDCI
+    end
+    @testset "COM" begin
+        Int8[0 0 0 0 1 0 1 0 0 1 0 0 0 0 0 1] == pdp11.COM
+    end
+    @testset "BIC" begin
+        Int8[0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 1] == pdp11.BIC
+    end
+    @testset "ROL" begin
+        Int8[0 0 0 0 1 1 0 0 0 1 0 0 0 0 0 0] == pdp11.ROL
+    end
+    @testset "SWAB" begin
+        Int8[0 0 0 0 0 0 0 0 1 1 0 0 0 0 0 0] == pdp11.SWAB
+    end
+    @testset "SXT" begin
+        Int8[0 0 0 0 1 1 0 1 1 1 0 0 0 0 0 0] == pdp11.SXT
+    end
+    @testset "ASHC" begin
+        Int8[0 1 1 1 0 1 1 0 1 0 0 0 0 0 0 0] == pdp11.ASHC
+    end
+    @testset "NEG" begin
+        Int8[0 0 0 0 1 0 1 1 0 0 0 0 0 0 0 0] == pdp11.NEG
+    end
+    @testset "ADC" begin
+        Int8[0 0 0 0 1 0 1 1 0 1 0 0 0 0 0 0] == pdp11.ADC
+    end
+    @testset "MUL" begin
+        Int8[0 1 1 1 0 0 0 0 1 0 0 0 0 0 0 0] == pdp11.MUL
+    end
+    @testset "TST" begin
+        Int8[0 0 0 0 1 0 1 1 1 1 0 0 0 0 0 0] == pdp11.TST
+    end
+end
+
 
 function basicTestingDecode(instructionToDecode=Missing)# instructionVector::AbstractVector{Int8}=0) #Missing to test charged function else instruction as argument like => vec(Int8[0 1 1 0 0 1 0 0 0 0 0 0 0 0 0 1])
     if (instructionToDecode == Missing)
@@ -41,7 +113,7 @@ function basicTestingDecode(instructionToDecode=Missing)# instructionVector::Abs
 
         println(pdp11.basics.decode(vec(Int8[0 0 0 0 1 0 1 1 0 1 0 0 0 0 0 0]), pdp11.form, pdp11.oplist, pdp11.orop) == pdp11.ADC, " ADC Function")
 
-        println(pdp11.basics.decode(vec(Int8[0 1 1 1 0 0 0 0 1 0 0 0 0 0 0 0]), pdp11.form, pdp11.oplist, pdp11.orop) == pdp11.MUL, "MUL Function")
+        println(pdp11.basics.decode(vec(Int8[0 1 1 1 0 0 0 0 1 0 0 0 0 0 0 0]), pdp11.form, pdp11.oplist, pdp11.orop) == pdp11.MUL, " MUL Function")
 
         println(pdp11.basics.decode(vec(Int8[0 0 0 0 1 0 1 1 1 1 0 0 0 0 0 0]), pdp11.form, pdp11.oplist, pdp11.orop) == pdp11.TST, " TST Function")
     else
